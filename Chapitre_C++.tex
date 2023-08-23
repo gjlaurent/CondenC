@@ -1,0 +1,1071 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Langage C++}
+
+C++ est un langage de programmation impératif, généraliste et orienté objet créé par Bjarne Stroustrup dans les années 1980.\medskip
+
+C++ propose un certain nombre de nouveaux opérateurs et instructions en plus de ceux du C mais son véritable apport est l'implantation des notions de classe, d'héritage et de généricité. 
+
+%Auparavant, nous allons passer en revue quelques nouveautés de C++ par rapport au C.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Quelques nouveautés du C++ par rapport au C}
+
+%--------------------------------------------------------------------
+\subsection{Mots réservés}\index{mots}\index{mots réservés}
+
+Les mots réservés du C++ sont :
+
+\begin{cppsyntaxe}
+asm       delete    if        return     try
+auto      do        inline    short      typedef
+break     double    int       signed     union
+case      else      long      sizeof     unsigned
+catch     enum      new       static     virtual
+char      extern    operator  struct     void
+class     float     private   switch     volatile
+const     for       protected template   while
+continue  friend    public    this
+default   goto      register  throw
+\end{cppsyntaxe}
+
+%--------------------------------------------------------------------
+\subsection{Commentaires}\index{commentaires}
+
+Un commentaire C++ commence par les caractères §//§ et se termine en fin de ligne.
+\begin{cpp}
+//  Cette ligne est un commentaire
+//  Programme d'essai
+void test(int x);         // teste la valeur de x
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Déclarations}
+
+En C++, les déclarations sont exécutables; ceci permet de mélanger déclarations et instructions et de ne plus respecter la structure §bloc = { déclarations ;  instructions }§.
+
+\begin{cpp}
+main() {
+    int j;
+    j=2;
+    ...
+    for (int i=1; i<2*j; j++) { 
+        char c;
+        ...
+    }
+    double x=3.14;
+      ...
+}
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Opérateur de portée ::}\index{opérateurs!de portée}\index{::}
+
+L'opérateur de portée permet d'accéder à une variable globale normalement masquée par une variable locale de même nom. 
+\begin{cpp}
+int i;                //  i global
+int main() {
+    int i;             //  i local
+    {
+        ...
+        if ( i == ::i ) //  teste l'égalité entre le i local et le i global
+            ... ;
+    }
+}
+\end{cpp}
+
+Il permettra surtout de préciser l'appartenance d'une méthode à une classe ou l'appartenance d'une classe à un espace de nom.\medskip
+
+\begin{remark}
+L'opérateur de portée est prioritaire devant tous les autres opérateurs (niveau 17).\index{opérateurs!priorités}\index{priorités des opérateurs}
+\end{remark}
+
+%--------------------------------------------------------------------
+\subsection{Espace de nom}
+
+Le C++ introduit le concept d'espace de nom pour permettre l'utilisation d'un même nom de classe ou de fonctions dans plusieurs bibliothèques.\medskip
+
+Les classes, les types et les fonctions peuvent être déclarés dans un espace de nom grâce à la commande §namespace§.
+
+\begin{cpp}
+namespace perso {
+
+    class Vecteur2D { ... };
+    
+    double produitScalaire(Vecteur2D U, Vecteur2D V);
+    
+}
+\end{cpp} 
+
+Les éléments ainsi définis sont accessibles par l'intermédiaire de l'opérateur de portée:
+\begin{cpp}
+...
+perso::Vecteur2D A,B;
+...
+perso::produitScalaire(A, B);
+...
+\end{cpp}
+
+L'instruction §using§ permet de spécifier un emploi systématique d'un espace de nom pour une classe ou une fonction :
+\begin{cpp}
+using perso::Vecteur2D; // dorénavant Vecteur2D désigne perso::Vecteur2D
+
+using perso::produitScalaire; // dorénavant produitScalaire désigne
+                              // perso::produitScalaire
+\end{cpp}
+
+On peut aussi demander l'emploi systématique d'un espace de nom pour l'ensemble d'un espace de nom:
+\begin{cpp}
+using namespace perso; // dorénavant Vecteur2D désigne perso::Vecteur2D et 
+                       // produitScalaire désigne perso::produitScalaire
+\end{cpp}
+
+\begin{remark}
+La bibliothèque standard du C++ est définie dans l'espace de nom §std§ (\cf~\ref{chap:Std_C++}).
+\end{remark}
+
+%--------------------------------------------------------------------
+\subsection{Opérateur de gestion mémoire}\index{new}\index{delete}\index{delete []}\index{opérateurs!de gestion mémoire}
+
+Les opérateurs §new§, §delete§ et §delete []§ (opérant sur des pointeurs) permettent dynamiquement de créer des objets et de libérer la place mémoire occupée par ces objets.
+Ils remplacent l'utilisation des fonctions §malloc()§ et §free()§.
+
+L'opérateur §new§ appelle automatiquement le constructeur par défaut une fois l'espace mémoire réservé.
+
+Les opérateurs §delete§ et §delete []§ appellent automatiquement le destructeur de chaque objet avant de libérer la mémoire.
+
+\begin{cpp}
+int  *x;
+x = new int;
+*x = 5;
+*x = *x + 1;
+delete x;
+ 
+double *y; 
+y = new double[20];
+y[3] = 3.14;
+delete [] y;
+
+Vecteur2D *v;
+v = new Vecteur2D(3,5);
+v->afficher();
+delete v;
+\end{cpp}
+        
+%--------------------------------------------------------------------
+\subsection{Type référence}\index{types!référence}\index{opérateurs!adresse}\index{\&}
+
+C++ autorise la définition du type référence:
+\begin{cppsyntaxe}
+type &nom=valeur;
+\end{cppsyntaxe}
+
+Exemple :
+\begin{cpp}
+int i = 0;
+int &ref = i;    // L'objet ref permet de se référer directement à i.
+i++;        //  i = ref = 1, ref est devenu un synonyme de i
+ref++;      //  i = ref = 2.
+\end{cpp}
+
+Un objet de type référence doit toujours être initialisé et ne se déréférence jamais.
+
+%--------------------------------------------------------------------
+\subsection{Passage de paramètre par référence}\index{paramètres}\index{passage!par référence} 
+
+La notion précédente de type référence autorise donc le passage de paramètre par référence.
+
+\begin{cpp}
+void echange(double &x, double &y) {
+    double z=x;
+    x=y; 
+    y=z;
+}
+\end{cpp}
+
+L'appel §echange(a,b)§ va effectivement échanger les valeurs de §a§ et §b§ (\cf~\ref{sec:passage_des_paramètres}).
+
+%--------------------------------------------------------------------
+\subsection{Type booléen}\index{types!booléens}\index{booléens}\index{bool}
+
+Le C++ fournit un type booléen nommé §bool§. Un variable de type §bool§ peut prendre deux valeurs : §true§ ou §false§.
+
+\begin{cpp}
+bool trouve;
+
+trouve = false;
+
+while (!trouve)
+    ...
+\end{cpp}
+
+\begin{remark}
+Des conversions implicites permettent d'utiliser également 0 pour §false§ et toute valeur non nulle pour §true§. 
+\end{remark}
+
+%--------------------------------------------------------------------
+\subsection{Arguments facultatifs et par défaut}\index{arguments facultatifs}\index{valeurs par défaut} 
+
+Les fonctions et méthodes acceptent dans leur prototype des arguments avec des valeurs par défaut. Lors de l'appel, si ces arguments sont absents, la fonction utilisera ces valeurs par défaut. \emph{Ces arguments doivent être placés en fin de la liste d'arguments.}
+
+\begin{cpp}
+double somme(double a, double b = 1, double c = 0); // prototype
+
+double somme(double a, double b, double c) {
+    return a + b + c ;
+}
+
+q = somme(10, 20, 30);
+q = somme(10, 20); // équivalent à q=somme(10, 20, 0);
+q = somme(10);    // équivalent à q=somme(10, 1, 0);
+\end{cpp}
+
+
+
+%--------------------------------------------------------------------
+\subsection{Surcharge des fonctions}\index{surchage!des fonctions}\index{fonctions!surchage}
+
+C++ permet de définir plusieurs fonctions différentes avec le même nom.
+
+\begin{cpp}
+void somme(void);
+int somme(int, int);
+double somme(double a, double b);
+point3d somme(point3d, point3d);
+\end{cpp}
+
+Le compilateur se charge alors de déterminer l'appel de la bonne fonction, s'il n'y a pas d'ambiguïté, suivant le nombre et le type des paramètres (mécanisme de liaison statique).
+
+\begin{cpp}
+int i;
+double x;
+point3d p, q, r;
+i = somme(2, 3);
+x = somme(x, 3.14);
+q = somme(p, r);
+\end{cpp}
+        
+\begin{remark}
+Attention aux ambiguïtés! La surcharge et les arguments facultatifs rendent le cas suivant interdit car ambigu.
+\end{remark}
+
+\begin{cpp}
+double f(double x);
+double f(double x, double y = 1);
+
+...
+double a,b;
+a = f(b); // erreur : l'appel de f(b) n'est pas résolu
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Fonctions en ligne}\index{fonctions!en ligne}\index{inline} 
+
+Les fonctions ou méthodes en ligne, déclarées par §inline§, remplacent avantageusement les macro-instructions et leurs pervers effets de bord (\cf~\ref{sec:macro-instructions}).
+
+La déclaration §inline§ indique au compilateur de remplacer chaque appel de la fonction par son code dans le code généré.
+
+\begin{cpp}
+inline int carre(int a) {
+  return a*a;
+}
+
+x=2;
+r=carre(x); // r=4 et x=2
+x=2;
+r=carre(x+1);    // r=9 et x=2
+x=2;
+r=carre(x++); // r=4 et x=3
+\end{cpp}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Classes et objets C++}
+
+%--------------------------------------------------------------------
+\subsection{Syntaxe générale}
+
+La syntaxe générale de déclaration d'une classe est la suivante :\index{classe}\index{class}
+
+\begin{cppsyntaxe}
+class NomDeLaClasse {
+private:
+
+    // attributs et méthodes privés
+
+protected: 
+
+    // attributs et méthodes protégés
+
+public:
+
+    // attributs et méthodes publics
+
+};
+\end{cppsyntaxe}
+
+Les membres (attributs ou méthodes) déclarés en section §private§ ne sont accessibles que par les membres de la classe. §private§ est facultatif; c'est le mode par défaut.\index{private}
+
+Les membres de la section §protected§ sont accessibles par les membres de la classe et ceux des classes dérivées. Quant aux membres de la section §public§, ils sont accessibles par tous.\index{public}\index{protected}\medskip
+
+La méthode peut être définie à l'intérieur de la classe. Cependant, la classe peut ne contenir que les prototypes des méthodes, les méthodes étant définies à l'extérieur de la classe. Dans ce dernier cas, le nom de la méthode doit être précédé du nom de la classe suivi de §::§.\index{opérateurs!de portée}\medskip
+
+Comme les variables, les objets peuvent être globaux, statiques, automatiques ou constants.
+Seules les méthodes déclarées constantes (§const§) auront le droit de manipuler des objets constants.\index{const}\medskip
+
+Un champ déclaré §static§ sera partagé par tous les objets de la classe. Il devra donc être initialisé par l'implantation d'une variable globale.\index{static}
+
+\begin{remark}
+Il est d'usage de commencer le nom d'une classe par une majuscule et d'utiliser le §camelCase§. Les méthodes et attributs commencent par une minuscule.
+\end{remark}
+
+%--------------------------------------------------------------------
+\subsection{Constructeur et destructeur}
+
+%Comme une structure, les attributs d'un objet peuvent être initialisés lorsque les attributs sont déclarés publics, par exemple : §vecteur v={2,1.0,2.0};§ si les attributs de l'exemple précédent avaient été déclarés publics.
+
+C++ propose une méthode particulière appelée \emph{constructeur} dont le nom est le nom même de la classe et qui sera invoquée à chaque définition d'objet.\index{constructeur}\medskip
+
+De même, une méthode appelée \emph{destructeur} sera invoquée automatiquement quand un objet devra être détruit, c'est-à-dire à la fin de sa durée de vie (fin de bloc ou appel de §delete§).\index{destructeur}
+
+Le nom du destructeur est le nom de la classe précédé de §~§.
+Le destructeur n'admet ni paramètre, ni valeur de retour.
+
+%--------------------------------------------------------------------
+\subsection{Exemple}
+
+% Exemple à changer
+
+
+Déclaration d'une classe §Vecteur2D§ :
+
+\begin{cpp}
+class Vecteur2D {
+private :
+    double abs,ord;
+
+public :
+    Vecteur2D(double abscisse=0,double ordonnee=0); // constructeur de moi-même, par défaut le vecteur nul
+
+    double getAbscisse(void); // retourne l'abscisse de moi-même
+    double getOrdonnee(void); // retourne l'ordonnée de moi-même
+
+    void setAbscisse(double x); // modifie l'abscisse de moi-même par la valeur x
+    void setOrdonnee(double y); // modifie l'ordonnée de moi-même par la valeur y
+
+    void afficher(void); // affiche moi-même à l'écran sous la forme (abscisse, ordonnée)
+    void acquerir(void); // acquiert moi-même au clavier
+
+    double norme(void); // retourne la norme de moi-même
+    double produitScalaire(Vecteur2D V); // retourne le produit scalaire de V et de moi-même
+    Vecteur2D addition(Vecteur2D V); // retourne la somme de V et de moi-même
+
+};
+\end{cpp}
+
+Définition des méthodes de la classe §Vecteur2D§:
+
+\begin{cpp}
+Vecteur2D::Vecteur2D(double abscisse,double ordonnee) {
+    abs=abscisse;
+    ord=ordonnee;
+}
+
+double Vecteur2D::getAbscisse(void) {
+    return abs;
+}
+
+double Vecteur2D::getOrdonnee(void) {
+    return ord;
+}
+
+void Vecteur2D::setAbscisse(double x) {
+    abs = abs + x;
+}
+
+void Vecteur2D::setOrdonnee(double x) {
+    ord = ord + x;
+}
+
+void Vecteur2D::afficher(void) {
+    cout<<"("<<abs<<";"<<ord<<")"<<endl;
+}
+
+void Vecteur2D::acquerir(void) {
+    cout<<"entrer abscisse puis ordonnee du vecteur : ";
+    cin>>abs>>ord;
+}
+
+double Vecteur2D::norme(void) {
+    return sqrt(abs*abs+ord*ord);
+}
+
+double Vecteur2D::produitScalaire(Vecteur2D V) {
+    return abs*V.abs+ord*V.ord;
+}
+
+Vecteur2D Vecteur2D::addition(Vecteur2D V) {
+    return Vecteur2D(abs+V.abs,ord+V.ord);
+}\end{cpp}
+
+Quelques instanciations et manipulations de §Vecteur2D§ :
+\begin{cpp}
+Vecteur2D   u, v(5, 4), w;
+
+u.acquerir();
+cout<<"vecteur u = ";
+u.afficher();
+cout<<"vecteur v = ";
+v.afficher();
+
+w=u;
+cout<<"vecteur w = u = ";
+w.afficher();
+
+cout<<"norme de u = "<<u.norme()<<endl;
+cout<<"produit scalaire u.v = "<<u.produitScalaire(v)<<endl;
+
+w=u.addition(v);
+cout<<"vecteur u + v = ";
+w.afficher();
+
+Vecteur2D *z;
+z = new  Vecteur2D(5);
+*z=u;
+cout<<"vecteur *z = u = ";
+z->afficher();
+delete z;
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Pointeur this}\index{this}
+
+Le mot clé §this§ dans une méthode désigne l'adresse de l'objet sur lequel s'applique la méthode.
+
+Ainsi, la méthode §Vecteur2D::getAbscisse(void)§, peux s'écrire :
+\begin{cpp}
+double Vecteur2D::getAbscisse(void) {
+    return (*this).abs;
+}
+\end{cpp}
+
+ou encore :
+\begin{cpp}
+double Vecteur2D::getAbscisse(void) {
+    return this->abs;
+}
+\end{cpp}
+
+L'utilisation de §this§ est nécessaire lorsque l'on a explicitement besoin de l'objet courant en entier.
+
+%--------------------------------------------------------------------
+\subsection{Méthodes et classes friend}
+\index{friend}\index{classes!friend}\index{classes!amies}
+
+La déclaration §friend§ d'une méthode ou d'une classe permet de violer la protection des attributs et des méthodes déclarés §private§.
+
+Le mot clé §friend§ doit apparaître dans le prototype, mais pas dans la définition, lorsque la définition est effectuée à l'extérieur de la classe.
+
+\begin{cpp}
+class Vecteur2D {
+    ...
+    friend class Base2D;
+        ...
+};
+
+class Base2D {
+private:
+    Vecteur2D U,V;
+public:
+    ...
+    void afficher();
+    ...
+};
+
+void Base2D::afficher() {
+    cout<<"("<<U.abs<<";"<<U.ord<<")x("<<V.abs<<";"<<V.ord<<")"<<endl;
+}
+\end{cpp}
+
+La déclaration §friend§ s'avère pratique lors de la surcharge d'opérateurs dont le premier argument n'est pas un objet de la classe. Elle permet notamment de définir des fonctions \og{}banales\fg{}, c'est-à-dire non liées comme méthodes à des objets d'une classe. Par exemple, on peut surcharger la définition de la fonction §produitScalaire§ par :
+\begin{cpp}
+class Vecteur2D {
+    ...
+    friend double produitScalaire(Vecteur2D U,Vecteur2D V);
+        ...
+};
+
+double produitScalaire(Vecteur2D U,Vecteur2D V) {
+    return U.abs*V.abs+U.ord*V.ord;
+}
+\end{cpp}
+
+Ainsi, l'utilisateur aura deux façons de calculer le produit scalaire de ses vecteurs u et v :
+\begin{itemize}
+    \item soit par \lstinline§ps=u.produitScalaire(v);§, méthode associée à u,
+    \item soit par \lstinline§ps=produitScalaire(u,v);§,    fonction habituelle indépendante de u et de v.\medskip
+\end{itemize}
+
+\begin{remark}
+Une utilisation abusive de cette notion de \lstinline§friend§ va à l'encontre des notions de modularité, d'encapsulation et d'abstraction des implantations qui devraient être le souci de toute programmation orientée objet.
+\end{remark}
+        
+%--------------------------------------------------------------------
+\subsection{Surcharge des opérateurs}\index{surcharge!opérateurs}
+
+En C++, les opérateurs peuvent être surchargés, de même que les fonctions. Il suffit de le déclarer par le mot clé §operator§.
+
+Presque tous les opérateurs peuvent être surchargés :    
+\begin{cpp}
+new delete 
++    -    *    /    +=   -=   *=   /=
+%    ^    &    |    %=   ^=   &=   |=
+~    !    =    ==   !=
+<    >    <=   >=   
+<<   >>  <<=  >>=
+&&   ||   ++   --   ()   []
+\end{cpp}
+
+
+Par exemple, on peut compléter la classe §Vecteur2D§ en ajoutant dans la déclaration :
+\begin{cpp}
+class Vecteur2D {
+    ...
+    Vecteur2D operator+(const Vecteur2D & V);  // renvoie le vecteur V + moi-même
+    Vecteur2D operator*(double a); // retourne le vecteur égal à moi-même multiplié par un scalaire
+    bool      operator==(const Vecteur2D & V); // retourne vrai si V est identique à moi-même, faux sinon
+    
+        ...
+};
+
+ostream & operator<<(ostream & F,Vecteur2D V); // envoie abscisse et ordonnée du vecteur V dans le fichier F
+istream & operator>>(istream & F,Vecteur2D & V); // récupère le vecteur V depuis le fichier F
+\end{cpp}
+
+La définition de ces opérateurs surchargés peut être :
+\begin{cpp}
+Vecteur2D Vecteur2D::operator+(const Vecteur2D & V) {
+    return Vecteur2D(abs+V.abs,ord+V.ord);
+}
+
+Vecteur2D Vecteur2D::operator*(double a) {
+    return Vecteur2D(a*abs,a*ord);
+}
+
+bool Vecteur2D::operator==(const Vecteur2D & V) {
+    return ((abs==V.abs) && (ord==V.ord));
+}
+
+ostream & operator<<(ostream & F,Vecteur2D V) {
+    F<<V.getAbscisse()<<" "<<V.getOrdonnee();
+    return F;
+}
+
+istream & operator>>(istream & F,Vecteur2D & V) {
+    double x,y;
+    F>>x>>y;
+    V=Vecteur2D(x,y);
+    return F;
+}
+\end{cpp}
+
+Exemple d'utilisation : 
+\begin{cpp}
+cout<<"entrer un vecteur : ";
+cin>>v;
+cout<<"vecteur v = "<<v<<endl;
+
+w=u+v;
+cout<<"vecteur u + v = "<<w<<endl;
+
+cout<<"vecteur u * 3.0 = "<<u*3.0<<endl;
+
+cout<<"test u==v = "<<(u==v)<<endl;
+\end{cpp}
+
+Une convention existe pour distinguer les opérateurs unaires pré et post-fixés:
+\begin{itemize}
+    \item la déclaration \lstinline§void Vecteur2D::operator++(void)§ désigne l'opérateur préfixé utilisé par \lstinline§++u§; 
+    \item la déclaration \lstinline§void Vecteur2D::operator++(int)§ est pour l'opérateur post-fixé utilisé par \lstinline§u++§.
+\end{itemize}
+
+%--------------------------------------------------------------------
+\subsection{Classe canonique}    
+
+En théorie, toute classe devrait au moins comporter un constructeur, un constructeur par copie, l'opérateur d'affectation (§operator=§) et un destructeur.
+
+Si la classe ne contient pas d'éléments dynamiques instanciés par §new§ dans le constructeur, le constructeur par copie, le destructeur et l'opérateur d'affectation peuvent ne pas être définis. Ils seront alors définis par défaut par le compilateur.\medskip
+
+En revanche, si la classe contient au moins un élément dynamique instancié par §new§ dans le constructeur, ces trois méthodes doivent être explicitement définies. L'oubli de cette règle provoque au mieux des fuites de mémoires et au pire des bogues particulièrement difficiles à repérer.\medskip
+
+Exemple de classe vecteur contenant un tableau dynamique :
+\begin{cpp}
+class Vecteur {
+private:
+    int dim; // dimension du vecteur
+    double *tab; // pointeur sur les éléments
+public:
+    Vecteur(int dimension=0); // Constructeur
+    Vecteur(const Vecteur &V); // Constructeur de recopie
+    ~Vecteur(void); // Destructeur
+    Vecteur & operator=(const Vecteur &V); // Opérateur d'affectation
+    ...
+};
+
+Vecteur::Vecteur(int dimension) {
+    dim=dimension;
+    if (dim!=0)
+        tab=new double[dim];
+}
+
+Vecteur::Vecteur(const Vecteur &V) {
+    dim=V.dim;
+    if (dim!=0)
+    {
+        tab=new double[dim];
+        for (int i=0; i<dim; i++)
+            tab[i]=V.tab[i];
+    }
+}
+
+Vecteur::~Vecteur(void) {
+    if (dim!=0)
+        delete [] tab;
+}
+
+Vecteur & Vecteur::operator=(const Vecteur &V) {
+    if (dim==V.dim)
+    {
+        for (int i=0; i<dim; i++)
+            tab[i]=V.tab[i];
+    }
+    else
+    {
+        if (dim!=0)
+            delete [] tab;
+        dim=V.dim;
+        if (dim!=0)
+        {
+            tab=new double[dim];
+            for (int i=0; i<dim; i++)
+                tab[i]=V.tab[i];
+        }
+    }
+    return *this;
+}
+\end{cpp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Classes dérivées et héritage}
+
+%--------------------------------------------------------------------
+\subsection{Classes dérivées}\index{classes!dérivées}\index{héritage}
+
+Soit une classe A, dite classe de base. Une classe B est dite dérivée de la classe de base A et hérite de ses membres en la déclarant par :
+        
+\begin{cppsyntaxe}
+class B : public A { 
+    // membres propres à la classe B
+};
+\end{cppsyntaxe}
+
+Les membres propres peuvent être de nouveaux attributs et de nouvelles méthodes.\medskip
+
+\begin{remark}
+La déclaration §class B : protected A§ rend les membres publics de A protégés dans B; la déclaration  §class B : private A§ rend tous les membres de A privés dans B.\index{public}\index{protected}\index{private}
+\end{remark}
+
+Soit la classe §Vecteur2D§ définie précédemment, on définit la classe §Vecteur3D§ en la dérivant de la précédente :
+\begin{cpp}
+class Vecteur3D : public Vecteur2D { 
+private: 
+    double z;
+public:
+    void afficher(void);
+    void acquerir(void);
+};
+
+void Vecteur3D::afficher(void) {
+    Vecteur2D::afficher();
+    cout<<"  "<<z;
+}
+     
+void Vecteur3D::acquerir(void) {
+    Vecteur2D::acquerir();
+    cout<<"entrer la coordonnées en z : "; 
+    cin>>z;
+}
+\end{cpp}
+            
+
+Les attributs §abs§ et §ord§ de la classe §Vecteur2D§ peuvent être déclarés §protected§ et non §private§ pour permettre aux classes dérivées d'y avoir accès.\medskip
+
+Dans les méthodes de la classe §Vecteur3D§, on fait appel aux méthodes de la classe de base en précisant le nom de la classe suivi de l'opérateur ::, par exemple §Vecteur2D::afficher();§.
+     
+%--------------------------------------------------------------------
+\subsection{Constructeur et destructeur dérivés}\index{constructeur}\index{destructeur}    
+
+En général, le constructeur de la classe dérivée utilise le constructeur de la classe de base. Pour ce faire, une syntaxe particulière est employée : dans la définition du constructeur de la classe dérivée, on ajoute les arguments destinés au constructeur de la classe de base entre parenthèses et précédés de deux points.
+
+Sur l'exemple précédent, le constructeur s'écrit par exemple :
+\begin{cpp}
+class Vecteur3D : public Vecteur2D {
+    ...
+    Vecteur3D(double abscisse=0,double ordonnee=0,double altitude=0); 
+    ...
+};
+
+Vecteur3D::Vecteur3D(double abscisse=0,double ordonnee=0,double altitude=0)
+    : Vecteur2D(abscisse,ordonnee) {
+    z=altitude;
+}
+\end{cpp}
+
+Les arguments §(abscisse,ordonnee)§ seront pris par le constructeur de la classe de base §Vecteur2D§.\medskip
+
+Le destructeur d'une classe dérivée fait automatiquement appel au destructeur de la classe de base.
+
+%--------------------------------------------------------------------
+\subsection{Méthodes virtuelles}\index{méthodes!virtuelles}\index{virtual}
+
+Une méthode déclarée §virtual§ devra être redéfinie dans les classes dérivées.
+Cette technique sera surtout utilisée pour des besoins de polymorphisme lorsque la classe des objets n'est connue qu'au moment de l'exécution; le mécanisme de déclenchement de la \og{}bonne\fg{} méthode se fera alors dynamiquement et non plus statiquement.
+
+Imaginons une utilisation des classes §Vecteur2D§ et §Vecteur3D§ précédentes où l'on déclarerait un pointeur sur un §Vecteur2D§ que l'on instanciera dynamiquement, tantôt par un §Vecteur2D§, tantôt par un §Vecteur3D§ (ce qui est possible puisqu'un §Vecteur3D§ est dérivé d'un §Vecteur2D§). 
+
+\begin{cpp}
+int main() {  
+    Vecteur2D *p;
+        p = new Vecteur2D(1,1);      
+        p->afficher();                  // on obtient   1  1 
+        p = new Vecteur3D(2,3,4);
+        p->afficher();                  // on obtient   2  3       !!!! 
+        ((Vecteur3D *)p)->ecrire();    // on obtient   2  3  4
+}
+\end{cpp}
+
+La méthode invoquée est celle de la classe du pointeur p, soit celle de la classe §Vecteur2D§. Pour obtenir le résultat souhaité, il faut convertir le pointeur p en pointeur sur un objet §Vecteur3D§.
+
+Pour obtenir cette liaison dynamique avec la classe de l'objet pointé et non du pointeur, il faut déclarer virtuelle la méthode de la classe de base par le mot clé §virtual§ :
+\begin{cpp}
+class Vecteur2D {
+    ...
+    virtual void afficher(void);
+    ...
+};
+
+int main() {  
+    Vecteur2D *p;
+        p = new Vecteur2D(1,1);      
+        p->afficher();                  // on obtient   1  1 
+        p = new Vecteur3D(2,3,4);
+        p->afficher();                  // on obtient   2  3  4
+}
+\end{cpp}
+
+\begin{remark}
+\begin{itemize}
+    \item seul un constructeur ne peut être virtuel;
+    \item si une classe comporte des méthodes virtuelles, il est prudent de déclarer le destructeur lui aussi virtuel;
+    \item on peut déclarer une méthode virtuelle pure par l'ajout au prototype de §= 0§; cela évite d'implanter la méthode dans la classe de base; il ne pourra alors exister d'objet de cette classe qualifiée d'abstraite ! (seuls des pointeurs pourront être utilisés) comme dans l'exemple suivant.
+\end{itemize}
+\end{remark}
+
+
+\begin{cpp}
+class ClasseAbstraite {
+    ...
+    virtual double methode_virtuelle_pure( void ) = 0;
+    ...
+};
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Héritage multiple}\index{héritage!multiple}
+
+Une classe peut dériver de plusieurs autres classes de base et hériter ainsi des membres de chacune.
+
+\begin{cppsyntaxe}
+class B : public A1, public A2, ... , public An { 
+    // membres propres à la classe B
+}; 
+\end{cppsyntaxe}
+
+\begin{remark}
+\begin{itemize}
+    \item une classe ne doit pas hériter directement plusieurs fois de la même classe.     Tous les Ai doivent donc être distincts;
+  \item chaque classe de base peut être publique ou privée, par exemple :    \lstinline§class B : public A1, private A2 { ... };§
+  \item si les classes de base \lstinline§Ai§ possèdent des méthodes de même nom, l'ambiguïté sera levée par l'opérateur de portée (\lstinline§::§);
+  \item les constructeurs des classes de base seront exécutés en premier, suivant l'ordre des déclarations des classes \lstinline§A1,...,An§ puis le constructeur de la classe dérivée sera exécuté.
+\end{itemize}
+\end{remark}
+
+Exemple :    
+\begin{cpp}
+class A1 {
+protected:
+    int x1,y1;
+public:
+    A1(int a,int b)
+    {
+        x1=a ;
+        y1=b ;
+    };
+    virtual void ecrire()
+    {
+        cout<<x1<<y1<<endl;
+    };
+    ...
+}
+
+class A2 {
+protected:
+    int x2;
+public:
+    A2(int a)
+    {
+        x2=a;
+    };
+    virtual void ecrire()
+    {
+        cout<<x2<<endl;
+    };
+    ...
+}
+
+class B : A1, A2 {
+private :
+    int x,y;
+public  :
+    B(int a,int b,int c,int d) : A1(a,b), A2(c)
+    {
+        x = c ;
+        y = d ;
+    };
+    void ecrire()
+    {
+        A1::ecrire();
+        A2::ecrire();
+        cout << x << y ;
+    };
+    ...
+}
+\end{cpp}
+
+\begin{center}
+    \includegraphics[width=7cm]{Figures/heritage1}
+\end{center}
+%--------------------------------------------------------------------
+\subsection{Classes virtuelles}\index{classes!virtuelles}
+
+On peut trouver des cas où une classe dérive indirectement plusieurs fois d'une classe de base.
+
+Exemple :    
+\begin{cpp}
+class A { ... };
+
+class B1 : public A { ... };
+class B2 : public A { ... };
+
+class C  : public B1, public B2 { ... };
+\end{cpp}
+
+On se retrouve alors avec l'objet de la classe §C§ contenant deux sous-objets de la classe §A§. 
+
+\begin{center}
+    \includegraphics[width=9cm]{Figures/heritage2}
+\end{center}
+
+Si cet effet est indésirable, pour lever des ambiguïtés, pour résoudre les conflits et économiser la place mémoire, il suffit de déclarer les classes §B1§ et §B2§ comme virtuelles:
+\begin{cpp}
+class A { ... };
+
+class B1 : virtual public A { ... };
+class B2 : virtual public A { ... };
+
+class C  : public B1, public B2 { ... };
+\end{cpp}
+
+Un objet de la classe §C§ possédera ainsi en un seul exemplaire les membres de la classe §A§.
+
+\begin{center}
+    \includegraphics[width=9cm]{Figures/heritage3}
+\end{center}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Classes génériques}\index{classes!génériques}\index{template}
+
+Il s'agit ici de classes paramétrées par un ou plusieurs types. La déclaration d'une telle classe est précédée du mot clé §template§ suivi des paramètres entre chevrons.
+
+\begin{cppsyntaxe}
+template < class e1,class e2,...,class en > class nom_de_la_classe {...};
+\end{cppsyntaxe}
+
+Les paramètres peuvent être un type de base (§int§, §double§, ...) ou un identificateur de classe. 
+
+\begin{cpp}
+template < class element > class Couple {...}; // couple de 2 éléments de même type
+
+template < class element, int dim > class Tableau {...};    // tableau d'éléments de taille dim
+\end{cpp}
+
+On fait précéder l'implantation d'une méthode par §template < class e1,class e2,...,class en >§ et, de plus, la méthode est préfixée par le nom de la classe rappelant le paramétrage.
+
+\begin{cppsyntaxe}
+template < class e1,class e2,...,class en > 
+    type_de_la_méthode nom_de_la_classe<e1,e2,...,en>::nom_de_la_méthode(arguments)  {
+    ...
+}
+\end{cppsyntaxe}
+
+Par exemple, on veut se fabriquer une classe \og{}Couple\fg{} comme étant un couple d'éléments de type quelconque, pour pouvoir ensuite utiliser des couples d'entiers, de réels, de complexes, d'individus, \etc
+
+Déclaration de la classe :
+
+\begin{cpp}
+template <class element> class Couple {
+private    :
+    element x,y;
+public :
+    void afficher(void);
+    void acquerir(void);
+};
+\end{cpp}
+
+Implantation des méthodes de la classe :  
+
+\begin{cpp}
+template <class element> void Couple<element>::afficher(void) { 
+    cout<<"couple  ="<<x<<"  "<<y<<endl;
+};
+
+template <class element> void Couple<element>::acquerir(void) {
+    cout<<"entrer les éléments du couple ";
+    cin>>x;
+    cin>>y;
+};
+\end{cpp}
+
+Utilisation :     
+
+\begin{cpp}
+int main() {
+    Couple<int> a; // couple d'entiers
+    a.acquerir();
+    a.afficher();
+    Couple<double> b; // couple de réels
+    b.acquerir();
+    b.afficher();
+    Couple<Complexe> c; // couple de complexes; la classe complexe et les opérateurs
+    c.acquerir();           // surchargés << et >> étant définis par ailleurs
+    c.afficher();        
+
+    Couple<Complexe> t[10]; // t est un tableau de 10 couples de complexes
+}
+\end{cpp}
+
+\begin{remark}
+Dans le cas de classes paramétrées, la seule inclusion §#include "nom_de_la_classe.h"§ dans le fichier utilisateur peut conduire à des erreurs d'édition de liens si l'implantation des méthodes est extérieure dans un fichier §nom_de_la_classe.cpp§. Certains compilateurs nécessitent §#include "nom_de_la_classe.cpp"§ dans le fichier utilisateur.
+\end{remark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Gestion des exceptions}\index{erreurs}\index{exceptions}
+
+La gestion des exceptions proposée par C++ est effectuée à l'aide des mots clés §throw§, §catch§ et §try§. \index{throw}\index{catch}\index{try}
+
+Une exception peut être d'un type pré-défini (entier ou chaîne de caractères, par exemple) ou une instance d'une classe définie par le programmeur.
+
+Dans un bloc repéré par §try§, une exception est soulevée à l'aide de §throw§ et capturée par §catch§.
+
+\begin{cppsyntaxe}
+try {
+    // bloc d'instruction comportant des  throw  exception
+    // ou des appels de fonctions comportant des throw  exception
+}
+catch (type_1 exception) {
+    // traitement de l'exception
+}
+...
+catch (type_n exception) {
+    // traitement de l'exception
+}
+\end{cppsyntaxe}
+
+L'exception soulevée sera capturée par le premier catch comportant un type compatible. 
+
+Si aucun type n'est compatible, l'exception sera capturée par une fonction §unexpected()§ qui, par défaut, fait appel à §abort()§.\index{unexpected}\index{abort}
+
+L'ellipse §catch(...)§ capture tous les types d'exception.\medskip
+
+Lors d'appels imbriqués de fonctions, une exception est d'abord traitée par la fonction la plus profonde. Si elle ne peut être capturée par cette fonction, elle est retournée à la fonction appelant.
+
+Lorsque une exception est déclenchée, les objets créés dans le bloc §try§ sont détruits.\medskip
+
+    
+On peut préciser les prototypes des fonctions en ajoutant avec §throw§ les types d'exceptions qu'elles peuvent soulever : 
+\begin{cppsyntaxe}
+type nom_de_fonction(paramètres) throw (types exceptions) ;
+\end{cppsyntaxe}
+
+Exemple :    
+\begin{cpp}
+
+typedef  int  tableau[10];
+
+void  fonction_exemple_exagere (tableau t, int i, double x) throw(int, string);
+// cette fonction peut soulever des exceptions de type entier ou chaîne de caractères
+// range la partie entière de x dans t[i]
+
+int main() {
+    tableau  a;
+    int  k;
+    double   r;
+    try  {
+        cout<<"taper l'indice : ";
+        cin>>k;
+        cout<<"taper la valeur : ";
+        cin>>r;
+        fonction_exemple_exagere(a,k,r);
+    }
+    catch (string) {
+        cout << "avertissement :  " << e ;
+    }
+    catch (int e) {
+        switch (e) {
+            case 0: {
+                cout <<"débordement d'indice bas " << i ;
+                break;
+            }
+            case 1: {
+                cout <<"débordement d'indice haut "<< i ;
+                break;
+            }
+        }
+        exit(1);
+    }
+    catch (double  e) {
+        cout<<"valeur trop grande : "<<r ;
+        exit(2);
+    }
+    catch (...) {
+        cout << "exception non cataloguée !" ;
+        exit(3);
+    }
+    return 0;
+}
+
+void  fonction_exemple_exagere (tableau t, int i, double x) {
+    if (i<0) 
+        throw 0;
+    if (i>9) 
+        throw 1;
+    if (abs(x)>=32767) {
+        throw x ;
+    };
+    t[i]=abs(x);
+    if ((i==0)||(i==9)) {
+        throw "extrémité du tableau";
+    };
+    throw "tout est conforme ";
+}
+\end{cpp}

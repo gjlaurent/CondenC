@@ -1,0 +1,658 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Bibliothèques standards du C++}\label{chap:Std_C++}
+
+Ce chapitre présente une sélection des possibilités offertes par la bibliothèque standard du C++.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Entrées/sorties standards}\index{entrées/sorties}\index{iostream}\index{std}
+    
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties formatées}
+\index{entrées/sorties!formatées}\index{iostream}\index{std}
+
+
+La bibliothèque §iostream§ (incluse par §#include <iostream>§) définit de nouveaux classes et opérateurs d'entrées-sorties sur les types standards\footnote{Avant que le C++ ne soit normalisé, \lstinline§<iostream.h>§ était le seul fichier d'en-tête existant livré avec les compilateurs de l'époque. La normalisation ISO du C++ en 1998 a défini que \lstinline§<iostream>§ serait l'en-tête standard pour les entrées-sorties. L'absence de \lstinline§.h§ dans son nom indique qu'il s'agit désormais d'un en-tête standard, et donc que toutes ses définitions font partie de l'espace de nom standard \lstinline§std§. Il est en de même avec tous les fichiers d'en-tête standards en C++.}.\medskip
+
+Les entrées-sorties sont supportées par les classes §istream§ (flot d'entrée), §ostream§ (flot de sortie) et §iostream§ (flot d'entrée-sortie, classe dérivée des deux précédentes).\index{istream}\index{ostream}\index{iostream}
+
+
+Les variables et constantes suivantes sont également définies :
+\begin{itemize}
+    \item \lstinline§cin§ objet de type \lstinline§istream§  relié à l'entrée standard (le clavier par défaut);\index{cin}
+    \item \lstinline§cout§ objet de type \lstinline§ostream§ relié à la sortie standard (l'écran par défaut);\index{cout}
+    \item \lstinline§endl§ pour passer à la ligne suivante.\index{endl}
+\end{itemize}
+
+Les sorties se font par l'opérateur §<<§ :\index{opérateurs!de flots}
+
+\begin{cppsyntaxe}
+ostream& operator<<(type x);          
+\end{cppsyntaxe}
+
+Par exemple:
+\begin{cpp}
+#include <iostream> 
+using namespace std;
+
+int main() 
+{
+    cout << "Hello world !" << endl;
+    return 0;
+}
+\end{cpp}
+
+ou :
+\begin{cpp}
+#include <iostream> 
+
+int main()
+{
+    std::cout << "Hello world !" << std::endl;
+    return 0;
+}
+\end{cpp}
+
+ou encore :
+\begin{cpp}
+#include <iostream> 
+using std::cout;
+using std::endl;
+
+int main() 
+{
+    cout << "Hello world !" << endl;
+    return 0;
+}
+\end{cpp}
+
+Les entrées se font par l'opérateur §>>§ :
+
+\begin{cppsyntaxe}
+istream& operator>>(type & x);      
+\end{cppsyntaxe}
+
+Par exemple:
+\begin{cpp}
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    double x,y;
+    cout<<"entrer x ";  
+    cin>>x;
+    cout<<"entrer y ";
+    cin>>y;
+
+    cout<<" x = ";
+    cout<<x;
+    cout<<" y = ";
+    cout<<y;
+    cout<<endl;
+    return 0;
+}
+\end{cpp}
+
+On peut regrouper plusieurs expressions d'entrées-sorties en une seule:
+\begin{cpp}
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    double x,y;
+    cout<<"entrer x et y ";  
+    cin>>x>>y;
+
+    cout<<" x = "<< x <<" y = "<< y <<endl;
+    return 0;
+}
+\end{cpp}
+
+Pour lire un seul caractère, on utilise la méthode §get§ :
+\begin{cpp}
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    char c;
+    
+    c = cin.get();
+
+    cout<<" c = "<< c <<endl;
+    
+    return 0;
+}
+\end{cpp}
+
+
+
+Si l'on souhaite prendre en compte tous les caractères d'une chaîne et ne pas éliminer les blancs, tabulations, retours à la ligne et caractères de fin de fichier, on peut utiliser la méthode §getline§ :
+\begin{cpp}
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    char buffer[256];
+    
+    cin.getline(buffer,256);
+
+    cout<<" buffer = "<< buffer <<endl;
+    
+    return 0;
+}
+\end{cpp}
+
+% Donner un exemple !
+
+%Remarque :  
+%
+%        istream&  read ( char * s , int  n )
+%        int  gcout ( void )
+%        int  peek ( void )
+%        istream&  ignore ( int  n = 1 , int delim = EOF )
+%        istream&  putback ( char c )
+%
+%        ostream&  put ( char c )
+%        ostream&  write ( const char * s , int  n )
+%        ostream&  flush ( void )
+
+%--------------------------------------------------------------------
+\subsection{Manipulateurs}
+\index{manipulateurs}\index{iomanip}
+
+La bibliothèque <iomanip> fournit des outils de formatage appelés manipulateurs pour mettre en forme les données lors de l'affichage à l'écran :
+\begin{itemize}
+    \item \lstinline§setw(n)§ fixe la largeur de la zone d'affichage à n caractères,\index{setw}
+    \item \lstinline§setprecision(n)§    fixe le nombre de chiffres à afficher d'un nombre réel,\index{setprecision}
+    \item \lstinline§setfill('X')§ remplit la zone libre par des caractères X,\index{setfill}
+    \item \lstinline§hex§ pour lire ou afficher le prochain nombre en hexadécimal,\index{hex}
+    \item \lstinline§oct§    pour lire ou afficher le prochain nombre en octal,\index{oct}\medskip
+\end{itemize}
+
+Exemple :
+\begin{cpp}
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+void main( void )
+{
+    int n;
+    double a;
+    n=86;
+    a=-13.141592;
+    
+    cout<<"Affichage normal  : "<<n<<endl;
+    cout<<"Affichage formate : "<<setw(10)<<n<<endl;
+    cout<<"Affichage normal  : "<<a<<endl;
+    cout<<"Affichage formate : "<<setprecision(3)<<a<<endl;
+    cout<<"Affichage normal  : "<<setw(10)<<"ENSMM"<<"Besancon"<<endl;
+    cout<<"Affichage formate : "<<setw(10)<<setiosflags(ios::left)<<"ENSMM"
+    cout<<"Besancon"<<endl;
+}
+\end{cpp}
+
+Résultat produit à l'écran :
+\begin{console}
+Affichage normal  : 86
+Affichage formate :         86
+Affichage normal  : -13.1416
+Affichage formate : -13.1
+Affichage normal  :      ENSMMBesancon
+Affichage formate : ENSMM     Besancon
+\end{console}
+
+Ces manipulateurs font appels aux méthodes §fill()§, §width()§, §precision()§ de la classe §ios§. On peut donc aussi écrire :
+\begin{cpp}
+cout.fill('_');
+cout.width(10);
+cout.precision(3);
+cout<<a<<endl;
+\end{cpp}
+
+Ce qui donne :
+\begin{console}
+_____-13.1
+\end{console}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Entrées/sorties sur les fichiers}
+\index{entrées/sorties!fichiers}\index{fstream}\index{ifstream}\index{ofstream}
+
+
+La bibliothèque §<fstream>§ définit des classes permettant de lire et d'écrire dans des fichiers formatés : 
+\begin{itemize}
+    \item \lstinline§ifstream§ classe des fichiers ouverts en lecture, classe dérivée de §istream§;
+    \item \lstinline§ofstream§ classe des fichiers ouverts en écriture, classe dérivée de §ostream§;
+    \item \lstinline§fstream§ classe des fichiers ouverts en lecture-écriture, classe dérivée de \lstinline§iostream§.\medskip
+\end{itemize}
+
+Ces classes de flots fichiers héritent des méthodes de leurs classes mères auxquelles s'ajoutent quelques méthodes suivantes particulières.\medskip
+
+L'ouverture d'un fichier s'effectue implicitement lors de sa déclaration par la méthode constructeur ou explicitement par la méthode §open()§.
+
+\begin{cppsyntaxe}
+/* constructeurs sans ouverture */        
+ifstream::ifstream(void);
+ofstream::ofstream(void);
+fstream::fstream(void);
+
+/* constructeurs avec ouverture */    
+ifstream::ifstream(const char* nom,int mode=ios::in,int prot=filebuf::openprot);
+ofstream::ofstream(const char* nom,int mode=ios::out,int prot=filebuf::openprot);
+fstream::fstream(const char* nom,int mode,int prot filebuf::openprot);
+
+/* ouverture explicite */
+void ifstream::open(const char* nom,int mode=ios::in,int prot=filebuf::openprot);
+void ofstream::open(const char* nom,int mode=ios::out,int prot=filebuf::openprot);
+void fstream::open(const char* nom,int mode,int prot filebuf::openprot);
+\end{cppsyntaxe}
+
+La valeur de protection par défaut §openprot§ représente le droit de lecture-écriture pour le propriétaire du fichier et le droit de lecture pour tous.
+
+La valeur du mode est à choisir parmi les valeurs : §ios::in§, §ios::out§, §ios::app§, §ios::trunc§, §ios::ate§, §ios::nocreate§ ou §ios::noreplace§.
+
+Le mode peut être une concaténation de plusieurs valeurs, par exemple : §ios::in | ios::out | ios::noreplace§\medskip 
+
+
+Les autres méthodes sont :
+\begin{cppsyntaxe}
+void      close(void);        
+streampos tellg(void); //  retourne la position courante dans le fichier
+ifstream& seekg(streampos p); // déplacement absolu
+ifstream& seekg(streampos dep,ios::seek_dir pos);    // déplacement relatif
+// le paramètre pos peut être ios::beg, ios::cur ou ios::end
+\end{cppsyntaxe}
+
+Comme les classes des bibliothèques d'entrées-sorties, les classes de flots fichiers possèdent un ensemble de variables indicatrices de l'état d'un flot. Cet état peut être consulté en appelant les méthodes suivantes :
+\begin{cppsyntaxe}
+int eof(void);
+int bad(void);
+int fail(void);
+int good(void);
+int rdstate(void);
+void clear(int i=0);
+\end{cppsyntaxe}
+
+% Donner des exemples !!!
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Les classes conteneurs de la STL}
+\index{STL}\index{Standart Template Library}\index{conteneurs}
+
+La bibliothèque générique standard (Standart Template Library) est une bibliothèque C++, normalisée par l'ISO (document ISO/CEI 14882). L'une des implantations les plus diffusées de la STL a été développée historiquement par Hewlett-Packard, puis par Silicon Graphics\footnote{Une documentation complète est disponible sur le site de Silicon Graphics~: http://www.sgi.com/tech/stl/}. 
+
+%La STL est constituée de classes génériques et de sous-programmes permettant de réaliser rapidement les structures de données classiques et les algorithmes associés.
+
+La STL fournit un ensembles de classes génériques, appelées conteneurs, permettant de générer les structures de données les plus répandues telles que les tableaux, les listes (chaînées), les tableaux associatifs, \etc Il existe deux catégories de conteneurs~: les conteneurs séquentiels et les conteneurs associatifs. 
+
+%--------------------------------------------------------------------
+\subsection{Les conteneurs séquentiels}
+
+Les éléments d'un conteneur séquentiel sont stockés selon un ordre~: le deuxième suit le premier, le troisième suit le deuxième, \etc On peut parcourir le conteneur selon cet ordre (du premier au dernier). Enfin, quand on insère ou quand on supprime un élément, on le fait à une place qu'on a explicitement choisie. 
+
+Les trois principaux conteneurs séquentiels sont~: les tableaux ou collections statiques (classe §vector§), les listes chaînées (classe §list§) et les files (classe §deque§). Ces trois classes ont une interface proche mais se distinguent par des implantations différentes.\index{vector}\index{list}\index{deque}
+
+\begin{center}
+    \begin{tabular}{|l|c|c|c|}
+    \hline
+        &  \lstinline§vector§    &  \lstinline§deque§ & \lstinline§list§ \\
+        \hline
+        Accès à un élément  & O(1)    & O(1)    & O(N) \\
+        \hline
+    Insertion/suppression d'un élément en queue & O(1)    & O(1) & O(1) \\
+        \hline
+    Insertion/suppression d'un élément en tête & O(N) & O(1) & O(1) \\
+        \hline
+    Insertion/suppression d'un élément au milieu & O(N) & O(N) & O(1)\\
+        \hline
+    \end{tabular}
+\end{center}
+
+Les bibliothèques à inclure portent le nom des conteneurs (§<vector>§, §<list>§ et §<deque>§). Toutes les classes sont définies dans l'espace de nom §std§.
+
+\subsubsection{Méthodes communes}
+
+Les trois conteneurs §vector§, §deque§ et §list§ ont un certain nombre de méthodes communes (§operator=§, §size§, §empty§, §clear§, §operator==§, §operator<§, §back§, §push_pack§, §pop_back§, §begin§, §end§, §insert§, §erase§) qui sont détaillées dans les exemples suivants.
+
+\paragraph{Construction}~
+
+\begin{cpp}
+list<int>      L;        // La liste L est vide
+
+list<int>      A(10);    // La liste A contient 10 entiers non initialisés
+vector<double> V(20);    // Le vecteur V contient 20 réels non initialisés
+
+list<int>      B(10,0);  // La liste B contient 10 entiers initialisés à 0
+deque<int>     D(20,-1); // La file D contient 20 entiers initialisés à -1
+\end{cpp}
+
+Dans les exemples suivants, §X§ et §Y§ désigneront arbitrairement des conteneurs §vector§, §deque§ ou §list§.
+
+\paragraph{Affectation et recopie}~
+
+Les opérateurs d'affection et de recopie (passage par valeur) sont définis et utilisables directement.
+\begin{cpp}
+X=Y; // copie effective des éléments de X dans Y
+     // X et Y appartenant à la même classe
+\end{cpp}
+
+\paragraph{Nombre d'éléments (dimension)}~
+
+\begin{cpp}
+int N=X.size();    // N reçoit la dimension de X
+if (X.empty()) ... // Teste si X est vide
+\end{cpp}
+
+\paragraph{Vider un conteneur}~
+
+\begin{cpp}
+X.clear(); // X.size() vaut maintenant 0
+\end{cpp}
+
+\paragraph{Comparaison entre conteneurs}~
+
+Ces opérateurs supposent que des opérateurs correspondants (§==§, §<§, \etc) soient définis sur les éléments.
+\begin{cpp}
+if (X==Y) ... // vrai si X et Y sont identiques (même éléments, même taille)
+if (X<Y) ...  // comparaison lexicographique entre X et Y
+\end{cpp}
+
+\paragraph{Ajout/suppression en queue}~
+
+Les trois conteneurs disposent de méthodes d'accès, d'ajout et de suppression du dernier élément en §O(1)§.
+
+\begin{cpp}
+int x=X.back();  // x reçoit la valeur du dernier élément de X
+X.push_back(45); // ajoute un élément de valeur 45 à la fin X
+X.pop_back();    // supprime le dernier élément
+\end{cpp}
+
+\paragraph{Accès aux éléments, notion d'itérateur}~\index{itérateurs}
+
+Pour tous les conteneurs, l'accès aux éléments peut se faire par l'intermédiaire d'un itérateur. Un itérateur est un objet défini par la classe conteneur (d'où la déclaration §list<int>::iterator§ par exemple) qui se comporte comme un pointeur sur les éléments du conteneur. Les deux exemples qui suivent sont valables également pour §vector§ et §deque§.
+\begin{cpp}
+list<int>::iterator il; // itérateur sur les éléments d'une liste d'entiers
+il=L.begin();           // il pointe sur le premier élément de L
+*il=35;                 // affecte la valeur 35 au premier élément de L
+il++;                   // avance d'un élément
+cout<<*il;              // affiche la valeur du deuxième élément de L
+
+il=L.begin();           // il pointe sur le premier élément de L
+while (il!=L.end()) {    // tant qu'il y a encore des éléments
+    cout<<*il;          // affiche l'élément pointé par il
+    il++;               // avance d'un élément
+}
+\end{cpp}
+
+\paragraph{Insertion/suppression d'un élément}~
+
+\begin{cpp}
+L.insert(il,5);   // insère un élément devant l'élément pointé par il
+V.erase(il);      // supprime l'élément pointé par il
+                  // après cet appel il n'est plus valide
+il=V.erase(il);   // supprime l'élément pointé par il et il pointe sur
+                 // l'élément suivant
+\end{cpp}
+
+\subsubsection{Méthodes du conteneur vector}
+
+Le conteneur §vector§ correspond au concept de tableau ou collection statique.
+
+\paragraph{Accès direct aux éléments}~
+
+Dans un conteneur §vector§, l'accès aux éléments (et leur modification) est direct avec l'opérateur §[]§. Les indices courent de §0§ à §V.size()-1§.
+\begin{cpp}
+for (int i=0 ;i<V.size();i++)
+    V[i]=2*V[i];         // double toutes les valeurs
+\end{cpp}
+
+\paragraph{Ajout/suppression en queue}~
+
+Comme §list§ et §deque§, le conteneur §vector§ dispose des méthodes d'accès, d'ajout et de suppression du dernier élément en §O(1)§. Si la dimension du conteneur diminue, les espaces mémoires en surplus sont conservés. Si la dimension du conteneur augmente et dépasse la taille maximum qu'il a atteint dans le passé, le conteneur procède à une réallocation en mémoire (opération très lente en §O(N)§).
+
+\paragraph{Modification de la dimension}~
+
+On peut changer à tout moment la dimension d'un conteneur §vector§ (ce qui provoque une réallocation en mémoire).
+\begin{cpp}
+vector<int> V;  // V est créé vide (dimension nulle)
+V.resize(10);   // V est maintenant de taille 10
+V.resize(20,4); // V contient maintenant 20 entiers initialisés à 4
+\end{cpp}
+
+\paragraph{Utilisation des méthodes communes nécessitant un itérateur}~
+
+Pour obtenir de manière directe un itérateur sur un élément du conteneur, on utilise l'opérateur §&§.
+
+\begin{cpp}
+vector<int> V(10,3); // V=<3,3,3,3,3,3,3,3,3> 
+V.insert(&V[3],7);   // V=<3,3,3,7,3,3,3,3,3,3>
+V.erase(&V[2],7);    // V=<3,3,7,3,3,3,3,3,3>
+\end{cpp}
+
+\subsubsection{Méthodes du conteneur deque}
+
+Le conteneur §deque§ dispose des mêmes fonctionnalités que §vector§
+mais il permet en plus l'accès, l'ajout et la suppression en tête en §O(1)§ avec les méthodes~: §front§, §push_front§ et §pop_front§. Naturellement,
+les autres opérations sur §deque§ sont légèrement plus lentes que sur
+§vector§.
+
+\begin{cpp}
+deque<int> D;
+D.push_front(45); // ajoute un élément de valeur 45 en tête D
+D.pop_front();    // supprime le premier élément
+int x=D.front();    // x reçoit la valeur du premier élément de D
+\end{cpp}
+
+\subsubsection{Méthodes du conteneur list}
+
+Le conteneur §list§ est une liste doublement chaînée. L'accès direct n'est
+pas possible (avec l'opérateur §[]§), il faut obligatoirement utiliser un itérateur.
+
+\paragraph{Accès/ajout/suppression d'élément}~
+
+Le conteneur §list§ dispose des méthodes d'accès, d'ajout et de
+suppression en tête et en queue~: §front§, §back§,
+§push_front§, §pop_front§, §push_back§,
+§pop_back§.
+
+\paragraph{Autres méthodes}~
+
+\begin{cpp}
+L.sort();    // trie la liste L
+L.merge(B);  // fusion de deux listes ordonnées
+L.remove(0); // retire tous les éléments nuls de L
+L.unique();  // L n'a plus de doublons !
+
+L.remove_if(Pair); // retire tous les éléments pairs de L
+// suppose qu'une fonction Pair est définie, par exemple :
+// bool Pair(int n)
+// { return(n%2); }
+\end{cpp}
+
+\subsubsection{Algorithmes génériques}
+
+Les algorithmes génériques sont des sous-programmes qui manipulent un conteneur quelle que soit sa classe. Ils sont définis dans la bibliothèque §<algorithm>§. Ces algorithmes supposent que les opérateurs §==§ et §<§ sont définis sur les éléments. Les quelques exemples qui suivent sont valables  pour §vector§, §deque§ et §list§.
+
+\paragraph{Algorithmes de recherche}~
+
+\begin{cpp}
+list<int>::iterator il;
+il=find(L.begin(),L.end(),10); // renvoie un itérateur sur le premier
+                               // élément égal à 10 si il existe et
+                               // l'itérateur L.end() sinon
+il=find_if(L.begin(),L.end(),Pair()); // Trouve le premier élément pair
+\end{cpp}
+
+\paragraph{Algorithme de recherche dichotomique (pour un conteneur trié)}~
+
+\begin{cpp}
+list<int>::iterator il;
+il=binary_search(L.begin(),L.end(),10);
+\end{cpp}
+
+\paragraph{Algorithmes de recherche de maximum ou de minimum}~
+
+\begin{cpp}
+list<int>::iterator il;
+il=min_element(L.begin(),L.end());
+il=max_element(L.begin(),L.end());
+\end{cpp}
+
+\paragraph{Algorithme de tri}~
+
+\begin{cpp}
+sort(V.begin(),V.end());
+\end{cpp}
+
+\subsection{Les conteneurs associatifs}
+
+Les conteneurs associatifs ont pour vocation de retrouver une information non plus en fonction de sa place dans le conteneur mais en fonction de sa valeur ou d'un partie de sa valeur appelée clé. Par exemple, un dictionnaire peut être modélisé par un conteneur associatif contenant des articles dont la clé d'accès serait définie par le mot correspondant à l'article. 
+
+Les deux conteneurs associatifs les plus importants sont §map§ et §multimap§.\index{map}\index{multimap}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{La classe string}
+\index{chaînes de caractères}\index{string}\index{types!chaînes de caractères}
+
+La classe §string§ de la bibliothèque §<string>§ offre un cadre pratique pour manipuler les chaînes de caractères en C++. Les opérateurs usuels (affectation §=§, concaténation avec §+§, \etc) ainsi que les entrées-sorties standards (§cout§, §cin§) sont utilisables directement.
+
+Le petit programme ci-dessous illustre la facilité d'utilisation de cette classe~:
+\begin{cpp}
+string A,B(", ca va ?");
+A="bonjour";
+A=A+" antoine";
+A=A+B;
+A[0]='B';
+B=A;
+cout<<A<<endl;
+if (A==B) cout<<"A est identique à B"<<endl;
+\end{cpp}
+
+Le code suivant décrit les principales méthodes de cette classe sous la forme
+d'une définition de classe simplifiée (la définition réelle utilise la classe générique §basic_string§ et est peu lisible.
+
+\begin{cppsyntaxe}
+class string {
+private:
+    ...
+public:
+    /// construit moi-même avec une chaîne de caractère entre 
+    /// guillemets
+    string(char * ch="");
+    
+    /// constructeur de recopie
+    string(const string & s);
+    
+    /// libère la mémoire
+    ~string();
+
+    /// moi-même reçoit s
+    void operator=(const string & s);
+    
+    /// moi-même reçoit une chaîne de caractère entre guillemets
+    void operator=(char * ch);
+    
+    /// renvoie vrai si moi-même est avant s dans l'ordre 
+    /// alphabétique
+    bool operator<(string s);
+    
+    /// renvoie vrai si moi-même et s sont identiques
+    bool operator==(string s);
+    
+    /// renvoie moi-même suivi de la chaîne s (concaténation)
+    string operator+(string s);
+
+    /// renvoie le ième caractère de moi-même
+    char & operator[](int i);
+
+    /// renvoie la taille de moi-même
+    int size(void);
+    
+    /// renvoie vrai si moi-même est vide
+    bool empty(void);
+
+    /// renvoie la position de la première occurence de s 
+    /// dans moi-même, si s n'est pas dans moi-même alors le 
+    /// résultat est <0 ou >size()
+    int find(string s);
+
+    /// insert s à la ième position dans moi-même
+    void insert(int i,string s);
+    
+    /// supprime n caractères de moi-même à partir du ième caractère
+    void erase(int i,int n);
+    
+    /// remplace n caractères de moi-même à partir du ième caractère
+    /// par ceux de s
+    void replace(int i,int n,string s);
+    
+    /// renvoie une sous-chaîne de moi-même de taille n à partir 
+    /// du ième caractère
+    string substr(int i,int n);
+
+    /// renvoie un pointeur sur un tableau de caractères contenant
+    /// la chaîne stocké par moi-même
+    char * c_str(void);
+};
+\end{cppsyntaxe}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture et écriture de données (réels, entiers, \etc) dans une chaîne de caractères}
+
+Les classes §ostringstream§ et §istringstream§ de la bibliothèque §<sstream>§ permettent de convertir des valeurs numériques en chaînes de caractères à l'aide des opérateurs de flot.\index{ostringstream}\index{istringstream}\index{sstream}
+
+Exemple de conversion d'un entier en chaîne de caractères :
+\begin{cpp}
+int n=13;
+string s;
+ostringstream os;
+os<<n;
+s=os.str();  // s reçoit la chaîne "13"
+\end{cpp}
+
+Pour lire des données contenues dans une chaîne, on procède de la manière suivante :
+\begin{cpp}
+int n;
+string s="13";
+istringstream is(s);
+is>>n;       // n prends la valeur 13
+\end{cpp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Classe complex}
+\index{nombres complexes}\index{complex}\index{types!complexes}
+
+
+La bibliothèque §complex§ définit une classe générique permettant de manipuler des nombres complexes de façon naturelle.
+\begin{cpp}
+#include <iostream>
+#include <complex>
+using namespace std;
+
+int main() {
+    complex<double> x,y,z(0,0);
+
+    x=0.5+2i;
+
+    y=complex<double>(5,7);
+
+    z=x+exp(y*conj(y));
+
+    cout<<x<<endl<<y<<endl<<z<<endl;
+
+    return 0;
+}
+\end{cpp}
+
+Un certain nombre de fonctions usuelles sont également proposées (ou surchargées)  :  
+§real§, §imag§, §abs§, §arg§, §norm§, §conj§, §polar§, §cos§, §cosh§, §exp§, §log§, §log10§, §pow§, §sin§, §sinh§, §sqrt§, §tan§, §tanh§.
+
+\index{fonctions!complexes}\index{real}\index{imag}\index{abs}\index{arg}\index{norm}\index{conj}\index{polar}\index{abs}\index{exp}\index{log}\index{log10}\index{pow}\index{sqrt}\index{sin}\index{cos}\index{tan}\index{asin}\index{acos}\index{atan}\index{atan2}\index{sinh}\index{cosh}\index{tanh}
+

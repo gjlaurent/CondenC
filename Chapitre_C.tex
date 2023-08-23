@@ -1,0 +1,1713 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Langage C}
+
+C est un langage de programmation impératif, généraliste et de bas niveau inventé au cours de l'année 1972 par Dennis Ritchie et Ken Thompson dans les Laboratoires Bell en même temps qu'Unix.\medskip
+
+C est conçu pour être compilé en un nombre d'instructions machine assez prévisible en termes d'occupation mémoire et de charge de calcul. Il utilise des types entiers et flottants correspondant aux types de donnée supportés par le processeur et permet la gestion directe de la mémoire par l'intermédiaire de pointeurs.\medskip
+
+Ce document propose un condensé de la syntaxe du langage illustré de nombreux exemples. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Symboles, identificateurs et commentaires}
+
+%--------------------------------------------------------------------
+\subsection{Symboles de base du langage}\index{symboles}\index{caractères spéciaux}
+
+Lettres~: §A, ..., Z, a, ..., z§
+
+Chiffres~: §0, ..., 9§
+
+Caractères spéciaux~: \lstinline§+ - * / _ = < > ^ ~ ( ) [ ] { } .,; : ' " \ | & % ! ?§ et l'espace.
+
+%--------------------------------------------------------------------
+\subsection{Identificateurs}\index{identificateurs}
+
+Un identificateur commence par une lettre ou §_§, suivi d'une
+combinaison de lettres, de chiffres et §_§ (l'espace et autres
+symboles spéciaux sont proscrits).
+
+\medskip
+Le langage C distingue les majuscules des minuscules dans les identificateurs.
+
+\begin{remark}
+Pour nommer les variables et les fonctions, il est d'usage d'utiliser le §snake_case§ ou le §camelCase§ avec des caractères minuscules.
+\end{remark}
+\begin{remark}
+Il est d'usage d'utiliser  le §SCREAMING_SNAKE_CASE§ avec des caractères majuscules pour nommer les constantes et les macro-instructions.
+\end{remark}
+
+\newpage
+
+%--------------------------------------------------------------------
+\subsection{Mots réservés}\index{mots}\index{mots réservés}
+
+Un certain nombre d'identificateurs sont réservés et ne peuvent être redéfinis
+par l'utilisateur ou utilisés autrement que suivant la syntaxe prévue. Les mots réservés du C sont :
+
+\begin{cppsyntaxe}                      
+auto      do        goto      signed    unsigned
+break     double    if        sizeof    void
+case      else      int       static    volatile
+char      enum      long      struct    while
+const     extern    register  switch
+continue  float     return    typedef
+default   for       short     union
+\end{cppsyntaxe}
+
+
+%--------------------------------------------------------------------
+\subsection{Commentaires}\index{commentaires}
+
+Un commentaire dans un programme C se place entre les balises §/*§ et §*/§ et peut se prolonger sur plusieurs lignes.
+
+\begin{cpp}
+/* ceci est un commentaire */
+\end{cpp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Types simples}
+
+%--------------------------------------------------------------------
+\subsection{Type énuméré}\index{types!énumérés}\index{enum}
+
+Un type énuméré est défini par l'énumération ordonnée des identificateurs
+représentant les constantes du type, entre accolades.
+
+\begin{cppsyntaxe}
+enum identificateur_de_type { LISTE_DES_CONSTANTES };
+\end{cppsyntaxe}
+
+Les éléments de la liste sont séparés par des virgules.
+
+\begin{cpp}
+enum couleur { TREFLE, CARREAU, COEUR, PIQUE };
+  /* TREFLE est codé par la valeur 0, CARREAU par la valeur 1, etc. */
+
+enum jour { LUNDI=1, MARDI, MERCREDI, JEUDI, VENDREDI, SAMEDI };
+  /* LUNDI est codé par la valeur 1, MARDI par la valeur 2, etc. */
+
+enum booleen { FAUX=0, VRAI=1 };
+\end{cpp}
+
+
+
+%--------------------------------------------------------------------
+\subsection{Type entier~: char, short, int, long, unsigned}\index{entiers}\index{types!entiers}
+
+La différence entre les différents types entiers est uniquement sur le nombre d'octets
+de codage en mémoire~:
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§char§  & entier sur 1 octet (-128 à 127)\index{char}\\
+    \lstinline§short§ & entier sur 2 octets (-32\,768  à  32\,767)\index{short}\\
+    \lstinline§int§   & entier sur 2 ou 4 octets suivant les compilateurs et les
+    processeurs\index{int}\\
+    \lstinline§long§  & entier sur 4 octets (-2\,147\,483\,648 à
+    2\,147\,483\,647)\index{long}\\
+    \lstinline§long int§ & équivalent à \lstinline§long§\\
+\end{tabular}
+\end{remark}
+
+
+Tous ces types entiers peuvent être précédés du mot-clé §unsigned§.
+\index{unsigned}
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§unsigned char§  & entier sur 1 octet (0 à 255)\\
+    \lstinline§unsigned short§ & entier sur 2 octets (0 à 32\,767)\\
+    \lstinline§unsigned int§   & entier sur 2 ou 4 octets suivant les compilateurs et les processeurs\\
+    \lstinline§unsigned long§  & entier sur 4 octets (0 à 4\,294\,967\,295)\\
+\end{tabular}
+\end{remark}
+
+
+\subsection{Type réel~: float, double}\index{réels}\index{types!réels}
+
+La représentation flottante utilise une mantisse et un exposant codés sur un certain nombre
+d'octets.
+
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§float§ & réel sur 4 octets (de 3,4e-38 à 1,7e38 avec 7 chiffres
+    significatifs)\index{float}\\
+    \lstinline§double§ & réel sur 8 octets (de 1,7e-308 à 3,4e308 avec 15 chiffres
+    significatifs)\index{double}\\
+    \lstinline§long double§ & réel sur 10 octets (de 3,4e-4932 à 1,7e4932 avec 18 chiffres
+    significatifs)\index{long double}\\
+\end{tabular}\end{remark}
+
+%--------------------------------------------------------------------
+\subsection{Type vide~: void}\index{void}\index{types!vide}
+
+Le type §void§ est un type de taille mémoire nulle.
+
+%--------------------------------------------------------------------
+\subsection{Type pointeur}\index{pointeurs}\index{types!pointeurs}
+
+Un pointeur (adresse) est typé par le type de l'objet pointé, précédé de *.
+
+\begin{cpp}
+int *pe;   /* pe est un pointeur sur un entier */
+char *pc;  /* pc est un pointeur sur un caractère */
+\end{cpp}
+
+Il existe une constante de type pointeur pré-définie dans les bibliothèques standards, la constante §NULL§.\medskip
+
+Un pointeur du type §void *§ n'est pas typé et est générique.
+
+%--------------------------------------------------------------------
+\subsection{Autres types}\index{chaînes de caractères}\index{booléens}\index{types!booléens}\index{types!chaînes de caractères}
+
+Le langage C ne fournit pas d'autres types, notamment pas de type booléen ni de type
+chaîne. Néanmoins, une chaîne de caractère est habituellement stockée dans un tableau de caractères (\cf~\ref{sec:chaine}).
+
+%--------------------------------------------------------------------
+\subsection{Conversion de type (cast)}\index{conversion de type}\index{cast}\index{types!conversions}
+
+En plus des règles standards de conversion de type dans les expressions, les
+identificateurs de type peuvent servir d'opérateurs de conversion.
+
+\begin{cpp}
+float x;
+int i;
+i=(int) x;
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Autres types}\index{chaînes de caractères}\index{booléens}\index{types!booléens}\index{types!chaînes de caractères}
+
+Le langage C ne fournit pas d'autres types, notamment pas de type booléen ni de type
+chaîne. Néanmoins, une chaîne de caractère est habituellement stockée dans un tableau de caractères (\cf~\ref{sec:chaine}).
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Constantes, variables et expressions}
+
+%--------------------------------------------------------------------
+\subsection{Constantes}\index{constantes}\index{const}
+
+Le mot réservé §const§ permet de déclarer des constantes.
+
+\begin{cppsyntaxe}
+const type NOM = valeur;
+\end{cppsyntaxe}
+
+Exemple :
+\begin{cpp}
+const float PI = 3.14159;
+const char CR = '\n';
+\end{cpp}
+
+
+Le langage C utilise les conventions ci-dessous pour coder des valeurs constantes :
+
+\begin{remark}
+\begin{tabular}{lllll}
+décimal~:     & \lstinline§2§     & \lstinline§-12§   & \lstinline§+123§    &         \\
+octal~:       & \lstinline§012§   & \lstinline§03775§ &           & (précédé de 0)    \\
+hexadécimal~: & \lstinline§0xa§   & \lstinline§0XA1F§ &           & (précédé de  0x ou 0X)    \\
+non signé~:   & \lstinline§12u§   & \lstinline§012u§  & \lstinline§0xa1fu§  & (entier suivi de u)  \\
+entier long~: & \lstinline§12l§   & \lstinline§012L§  & \lstinline§0xa1fuL§ & (entier suivi de l ou L)  \\
+\\
+réel~:        & \lstinline§2.§    & \lstinline§3.14§  & \lstinline§-45.2§   & §.15§   \\
+              & \lstinline§2.25f§ & \lstinline§3.01F§ &                     & (virgule fixe~: f ou F) \\
+              & \lstinline§10e-1§ & \multicolumn{2}{l}{\lstinline§-45.2E+12§} & (virgule flottante~: e ou E) \\
+\\
+caractère~:   & \lstinline§'a'§   & \lstinline§'C'§   &  \lstinline§'+'§     & (entre simples quotes)  \\
+\\
+chaîne~:     & \multicolumn{2}{l}{\lstinline§"commentaire"§} & \lstinline§"Claude"§ & (entre doubles quotes)   \\
+\end{tabular}
+\end{remark}
+
+
+Les caractères spéciaux sont précédés d'un \lstinline§\§ (anti-slash ou
+contre-barre).\index{caractères spéciaux}
+
+
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§'\n'§   &    nouvelle ligne \\
+    \lstinline§'\r'§   &    début de ligne \\
+    \lstinline§'\b'§   &    retour arrière \\
+    \lstinline§'\t'§   &    tabulation   \\
+    \lstinline§'\medskip'§   &    contre-barre  \\
+    \lstinline§'\f'§   &    nouvelle page \\
+    \lstinline§'\0'§   &    caractère \lstinline§NULL§  \\
+    \lstinline§'\''§   &    simple quote    \\
+    \lstinline§'\"'§   &    double quote    \\
+    \lstinline§'\ooo'§ &    caractère de code octal ooo  \\
+    \lstinline§'\xhh'§ &    caractère de code hexadécimal hh  \\
+\end{tabular}
+\end{remark}
+
+
+%--------------------------------------------------------------------
+\subsection{Variables}\index{variables}
+
+Toute variable doit être déclarée avant sa première utilisation. Une
+initialisation peut être faite au moment des déclarations.
+
+\begin{cppsyntaxe}
+type liste_de_noms_de_variables;
+
+type noms = valeurs;
+\end{cppsyntaxe}
+
+Exemple :
+\begin{cpp}
+char a, b;
+int j, i = 2;
+float resultat = 0.0;
+char nombre = '1',  lettre = 'a';
+\end{cpp}
+
+
+%--------------------------------------------------------------------
+\subsection{Opérateurs arithmétiques}\index{opérateurs!arithmétiques}
+
+Opérateurs binaires~:\index{+} \index{-} \index{*}\index{/} \index{\%}
+
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§+§ &  addition\index{additions}\\
+    \lstinline§-§ &  soustraction\index{soustractions}\\
+    \lstinline§*§ &  multiplication\index{multiplications}\\
+  \lstinline§/§ &  division (entière si les deux opérandes sont entiers, réelle sinon)\index{divisions}\index{divisions!entières} \\
+    \lstinline§%§ &  modulo (reste de la division entière )\index{modulo}\\ 
+\end{tabular}
+\end{remark}
+
+
+Opérateurs unaires~: \index{++} \index{--}
+
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§-§ &  opposé\\
+    \lstinline§++§ & auto-incrémentation (pré ou post-fixe)\index{incrémentation}\\
+    \lstinline§--§ &  auto-décrémentation (pré ou post-fixe)\\
+\end{tabular}
+\end{remark}
+
+Exemples d'utilisation :
+\begin{cpp}
+int i = 1, j, k;
+j = i++;    /* j reçoit la valeur 1, puis i est modifié en 2 */
+k = ++j;    /* j est d'abord modifiée en 2, puis k reçoit 2 */
+i++;        /* i est modifié en 3 */
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Opérateurs relationnels}\index{opérateurs!relationnels}\index{comparaisons} \index{<} \index{>}\index{<=} \index{>=}\index{==}\index{"!=}
+
+Ils permettent de comparer deux opérandes. Le résultat de la comparaison est un nombre entier~: 0 si le résultat est faux, 1 si le résultat est vrai.
+
+\begin{remark}
+\begin{tabular}{ll}
+               \lstinline§<§  &  infériorité stricte\index{infériorité}\\
+                \lstinline§>§  &  supériorité stricte\index{supériorité}\\
+                \lstinline§<=§ &  infériorité large    \\
+                \lstinline§>=§ &  supériorité large    \\
+                \lstinline§==§ &  égalité\index{égalité}\\
+                \lstinline§!=§ &  inégalité\index{inégalité}\index{différence}\\
+\end{tabular}
+\end{remark}
+
+Exemple d'utilisation :
+\begin{cpp}
+int b;
+b = ( x != y );  /* b reçoit la valeur 0 si x est égal à y, 1 sinon */
+\end{cpp}
+
+
+%--------------------------------------------------------------------
+\subsection{Opérateurs logiques}\index{opérateurs!logiques}\index{"!} \index{\&\&}\index{\textbar{}\textbar{}}
+
+Comme pour les opérateurs relationnels, le résultat d'une expression logique est une valeur entière 0 ou 1.
+
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§!§ &  négation logique\index{non!logique}\\
+    \lstinline§&&§ & et logique\index{et!logique}\\
+    \lstinline§||§ & ou logique\index{ou!logique}\\
+\end{tabular}
+\end{remark}
+
+Exemple:
+\begin{cpp}
+c = (a || b) && (i < j);
+\end{cpp}
+
+
+Remarques:
+\begin{itemize}
+    \item dans l'expression §(A&&B)§, si §A§ est faux, §B§ n'est pas évalué
+  \item dans l'expression §(A||B)§, si §A§ est vrai, §B§ n'est pas évalué
+\end{itemize}
+
+
+%--------------------------------------------------------------------
+\subsection{Opérateurs sur les bits}\index{opérateurs!bits}\index{\&}\index{\textbar{}} \index{\^\ } \index{\~\ }\index{opérateurs!décalages}\index{décalages}
+
+Ils ne peuvent être employés que sur des opérandes entiers et opèrent bit à bit.
+
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§&§ & et\index{et!bits}\\
+    \lstinline§|§ & ou\index{ou!bits}\\
+    \lstinline§^§ & ou exclusif\index{ou exclusif!bits}\\
+    \lstinline§~§ & négation (complément)\index{non!bits}\\
+    \lstinline§<<§ & décalage à gauche\\
+    \lstinline§>>§ & décalage à  droite\\
+\end{tabular}
+\end{remark}
+
+Exemple:
+\begin{cpp}
+y = x << 3;  /* y reçoit la valeur de x décalée de 3 bits vers la gauche (correspond à x multiplié par 2 puissance 3), codé sur le même nombre de bits que x. */
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Opérateurs d'affectation}\index{opérateurs!affectations}\index{affectations}
+
+L'affectation est considérée comme un opérateur.
+
+\begin{cppsyntaxe}
+var = expr /* où var est une variable et expr une expression. */
+\end{cppsyntaxe}
+
+Lors d'une affectation comme §x = expression§, l'expression est évaluée, cette valeur est affectée à la variable §x§, de plus, cette valeur est le résultat de l'opération d'affectation. \medskip
+
+Ceci permet des affectations multiples en une seule instruction comme §x = y = z = 1§    (§z§ reçoit 1, le résultat de l'affectation qui est 1 est affecté à §y§, \etc).\medskip
+
+Ceci permet également les affectations composées. Ces affectations combinent les opérateurs arithmétiques, logiques et de décalage avec l'affectation.\index{opérateurs!affectations~composées}
+\index{affectations!composées}
+
+\begin{cppsyntaxe}
+var op= expr /* où var est une variable, expr une expression 
+                et op= un opérateur. */
+\end{cppsyntaxe}
+
+Ceci est équivalent à §v = (v) op (e)§     
+
+\begin{remark}
+\begin{tabular}{ll}
+Arithmétiques & \lstinline§+=      -=      *=      /=      %=§\\ 
+Logiques      & \lstinline§&=      |=      ^=§\\
+Décalage      & \lstinline§<<=      >>=§\\  
+\end{tabular}
+\end{remark}
+
+
+
+Exemples:
+\begin{cpp}
+x += 1     /* correspond à x = x+1  ou à  x++  */
+a *= b      /* correspond à  a = a*b  */
+h &= xFF /* correspond à  h = h & xFF  */
+r <<= 4     /* correspond à  r = r << 4  */
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Opérateur conditionnel ?}\index{opérateurs!conditionnel}
+\index{affectations!conditionnelles} \index{?} 
+
+L'opérateur conditionnel §?§ est un opérateur ternaire. 
+
+\begin{cppsyntaxe}
+e1 ? e2 : e3 
+\end{cppsyntaxe}
+
+Si §e1§ est vrai, l'expression est égale à la valeur §e2§, sinon l'expression est égale à §e3§. Par exemple:
+\begin{cpp}
+m = ( a > b ) ? a : b;  /* m reçoit le max de a et b */
+( a == b ) ? c++ : c--; /* on ajoute 1 à c si a est égale à b, sinon on enlève 1 à c */
+\end{cpp}
+
+\begin{remark}
+L'opérateur conditionnel étant très peu lisible, il est recommandé de l'utiliser avec parcimonie...
+\end{remark} 
+
+%--------------------------------------------------------------------
+\subsection{Opérateur de taille (sizeof)}\index{opérateurs!de taille}\index{sizeof}
+
+Cet opérateur délivre le nombre d'octets occupés en mémoire par une expression ou un type. La valeur retournée est du type §size_t§ (entier non signé). Pour un type, des parenthèses sont requises, car il s'agit alors d'une fonction.
+
+\begin{cpp}
+int a;
+int b[100];
+
+n = sizeof a;   /* utile pour connaître la taille des entiers */
+n = sizeof b / sizeof b[0];    /* permet de connaître la nombre d'éléments du tableau b */
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Opérateurs sur les pointeurs}\index{opérateurs!pointeurs}\index{pointeurs!opérateurs}
+
+Il existe quelques opérateurs unaires sur les pointeurs :
+
+\begin{remark}
+\begin{tabular}{ll}
+    \lstinline§*§  & donne accès à l'élément pointé\\
+    \lstinline§&§  & fournit l'adresse de la variable\\
+    \lstinline§++§ & incrémente le pointeur du nombre d'octets de l'objet pointé\\
+  \lstinline§--§ & décrémente le pointeur du nombre d'octets de l'objet pointé
+\end{tabular}
+\end{remark}
+
+Exemples d'utilisation:
+\begin{cpp}
+int  e = 0;
+int *pe;  /* pe est un pointeur sur un entier */
+pe = &e;  /* pe reçoit l'adresse de la variable entière e */
+*pe = 3;  /* l'emplacement pointé par pe reçoit 3 */
+pe++;     /* pe pointe 2 octets plus loin */
+*pe = 4;
+\end{cpp}
+
+Les fonctions §malloc()§ et  §free()§ de la bibliothèque standard permettent d'allouer et de libérer dynamiquement de la mémoire. \index{allocations}\index{malloc}\index{free}
+Elles retournent des pointeurs du type §void *§, c'est-à-dire des pointeurs non typés. Le pointeur retourné par §malloc()§ peut être converti en pointeur typé.\medskip
+
+S'il n'y a plus de place mémoire disponible, la fonction §malloc§ retourne la valeur §NULL§.
+
+\begin{cpp}
+char  *p;   /* p est un pointeur sur un caractère */
+p = malloc(100); /* alloue de la place pour 100 caractères */
+...
+free(p);    /* libère la place des 100 caractères */
+        
+truc *q;    /* q est un pointeur sur un type truc défini ailleurs*/    
+q = (truc *)malloc(10*sizeof(truc));
+            /* alloue de la place pour 10 éléments de type truc  */
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Opérateur de séquence}\index{opérateurs!de séquence}
+
+L'opérateur de séquence (\lstinline§,§) autorise une liste d'expressions là où une seule expression est permise. Dans ce cas, les expressions sont évaluées de gauche vers droite. Le type et la valeur de la liste d'expressions est donc le type et la valeur de l'expression la plus à droite.
+
+\begin{cpp}
+for ( i=0,j=0; i<10; i++,j++ ) 
+    ...
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Priorité des opérateurs}\index{opérateurs!priorités}\index{priorités des opérateurs}
+
+%En l'absence de parenthèses, l'ordre de priorité des opérateurs de C et C++ est consigné dans le tableau en annexe \ref{chap:priorite}.
+
+Les opérateurs sont classés du plus prioritaire (niveau 16) au moins prioritaire (niveau 1).
+
+\begin{center}
+\small
+\begin{tabular}{|l|l|l|}
+\hline
+	\textbf{Niveau}	& \textbf{Opérateur} & \textbf{Descriptif} \\ \hline
+	
+  %17 & \lstinline$::$	         &	opérateur de portée globale \\
+    % & \lstinline$::$	         &	opérateur de portée de la classe \\ \hline 
+
+  16 & \lstinline$->   . $     &	sélection d'un membre de structure\\
+     & \lstinline$[ ]$	       &  indexation de tableau\\
+     & \lstinline$( )$         &	appel d'une fonction\\
+     & \lstinline$sizeof$	     &	taille en octets\\ \hline 
+	
+  15 & \lstinline$++   -- $    &  auto incrémentation et décrémentation\\
+     & \lstinline$~  !$           & 	négation bit à bit	et négation logique\\
+%		 & \lstinline$!$           &	négation logique \\
+		 & \lstinline$+   - $	     &  plus et moins unaires \\
+		 & \lstinline$* $          &	accès à une variable pointée\\
+		 & \lstinline$&$           &  adresse d'une variable\\
+		 & \lstinline$( )$         &  conversion de type\\
+%		 & \lstinline$new  delete$ &	opérateurs de gestion mémoire\\ \hline 
+
+	14 & \lstinline$->*   .*$		 &  sélection d'un membre de structure\\ \hline 
+
+	13 & \lstinline$*   /   %$	 &	opérateurs multiplicatifs\\ \hline 
+
+	12 & \lstinline$+   -$			 &  opérateurs additifs\\ \hline 
+
+	11 & \lstinline$>>   <<$		 &  opérateurs de décalage\\ \hline 
+
+	10 & \lstinline$<   <=   >   >=$	& opérateurs de relation\\ \hline 
+
+	9	 & \lstinline$==   !=$	   &	égalité et inégalité\\ \hline 
+
+	8	 & \lstinline$&	$         &  et bit à bit\\ \hline 
+
+	7	 & \lstinline$^$	         &	ou exclusif bit à bit\\ \hline 
+
+	6	 & \lstinline$|$	         &  ou bit à bit\\ \hline 
+
+	5	 & \lstinline$&&$	         &  et logique\\ \hline 
+
+	4	 & \lstinline$||$          &  ou logique\\ \hline 
+
+	3	 & \lstinline$? :$         & opérateur conditionnel\\ \hline 
+
+	2  & \lstinline$=   *=   /=   %=   +=   -=$	& opérateurs d'affectation\\
+		 & \lstinline$<<=   >>=   &=   ^=   |=$	 &	et d'affectation composée\\ \hline 
+
+	1	&	\lstinline$,$			       & opérateur de séquence\\ \hline
+\end{tabular}
+\end{center}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Types composés}\index{types!composés}
+
+%--------------------------------------------------------------------
+\subsection{Définition de type~: typedef}\index{types!définition}\index{typedef}
+
+L'instruction §typedef§ permet de nommer un nouveau type ou renommer
+un type existant.
+
+\begin{cppsyntaxe}
+typedef description_du_type identificateur_de_type;
+\end{cppsyntaxe}
+
+Exemple:
+\begin{cpp}
+typedef short petit_entier; /* petit_entier désignera un short */
+typedef short booleen; /* booleen désignera aussi un short */
+typedef char chaine[20]; /* chaine est le nom du type tableau de 20 caractères */
+\end{cpp}
+
+Le langage C fournit une seule structure de données, le tableau et permet la construction de nouveaux types structurés (§struct§ et §union§).
+    
+%--------------------------------------------------------------------
+\subsection{Tableaux}\index{tableaux}
+
+
+\subsubsection{Tableaux mono-dimensionnels}\index{tableaux!mono-dimensionnels}
+
+Un tableau est une collection d'éléments du même type accessibles par un indice.
+
+
+\begin{cppsyntaxe}
+type nom[taille];    
+\end{cppsyntaxe}
+
+
+où:
+\begin{itemize}
+    \item «taille» est une expression constante entière,
+    \item les éléments du tableau sont accessibles par un indice compris entre 0 et taille-1;
+\end{itemize}
+ 
+\begin{cpp}
+int a[10]; /* déclare une variable tableau a de 10 éléments a[0], ..., a[9] */
+typedef char message[20]; /* message est le nom du type tableau de 20 caractères */
+typedef float tab[10]; /* tab est le nom du type tableau de 10 réels */
+\end{cpp}
+ 
+\begin{remark}
+En général, le compilateur ne vérifie pas les débordements d'indice!
+\end{remark}
+
+Un tableau peut être initialisé lors de sa déclaration par une liste de valeurs entre accolades (si la liste est insuffisante, la fin du tableau est initialisée par des 0).
+
+\begin{cpp}
+char alerte[10] = { 'A', 't', 't', 'e', 'n', 't', 'i', 'o', 'n', '!' };
+float a[] = { 1.0, 2.0, -3.14 }; /* réserve la place pour un tableau de 3 réels */
+int b[5] = { 1, 2, 3 }; /* b[3] et b[4] sont mis à 0 */
+\end{cpp}
+
+
+\subsubsection{Relations entre tableaux et pointeurs}\index{tableaux!pointeurs}
+
+En C, l'identificateur d'une variable tableau est équivalent à un pointeur constant pointant sur le premier élément du tableau.
+
+\begin{cpp}
+int a[10];  
+int *pa;
+pa = a; /*  Le pointeur sur entier pa contient l'adresse de l'entier a[0],
+            i.e l'adresse du début du tableau a.  */
+pa = &a[0]; /* c'est équivalent */
+\end{cpp}
+
+Ainsi, §a[0]§ est accessible par §*pa§, c'est-à-dire par \lstinline§*(&a[0])§.\medskip
+
+D'autre part, un pointeur peut s'auto-incrémenter. L'adresse contenue dans le pointeur est automatiquement augmentée du nombre d'octets du type de l'élément pointé. De façon générale, §a[i]§  est accessible par  §*(pa+i)§. Les instructions suivantes sont donc équivalentes: §a[1]=x;§, §*(pa+1)=x;§ et §*(++pa)=x;§, par exemple :
+
+\begin{cpp}
+/* trois façons équivalentes de traiter le tableau a.*/
+for (i=0; i<10; i++) a[i]    = i;        
+for (i=0; i<10; i++) *(pa+i) = i;
+for (i=0; i<10; i++) *(pa++) = i;
+\end{cpp}
+
+\og{}équivalent\fg{} signifie ici que le résultat est identique pour l'utilisateur externe; ce n'est évidemment pas identique pour la machine et ses performances.\medskip
+
+\begin{remark}
+Ne pas oublier que le nom du tableau est une adresse constante. Par conséquent, des instructions comme \lstinline§a++§ ou \lstinline§a = pa§ sont illégales si $a$ est un tableau.
+\end{remark}
+        
+\subsubsection{Tableaux multi-dimensionnels}\index{tableaux:multi-dimensionnels}
+
+
+\begin{cppsyntaxe}
+type nom[taille1][taille2]...[taillen];
+\end{cppsyntaxe}
+
+Exemple:
+
+\begin{cpp}
+int a[5][3];    
+/* a est un tableau de 5 lignes et 3 colonnes, a[i][j]  0<=i<=4, 0<=j<=2 */
+/* a est un tableau de 5 éléments, chaque élément a[i] étant un tableau de 3 entiers */
+\end{cpp}
+     
+Les éléments sont stockés en mémoire de façon contiguë.
+
+Un tableau peut être initialisé lors de sa déclaration par une liste de valeurs entre accolades.
+
+\begin{cpp}
+int a[3][2] = { 1,2,3,4,5,6 }; /* vision mono-dimensionnelle */
+int a[3][2] = { {1,2},{3,4},{5,6}}; /* vision multi-dimensionnelle */
+\end{cpp}
+
+De par la relation entre tableau et pointeur, §a[i]§ est aussi un pointeur et §a§ un pointeur sur pointeur. Les notations suivantes sont donc équivalentes : 
+\begin{enumerate}
+    \item notation indicée habituelle:    §a[i][j]§,
+    \item vision du tableau bidimensionnel comme tableau de pointeurs: §*(a[i]+j)§,
+    \item vision du tableau bidimensionnel comme pointeur de pointeur: §*(*(a+i)+j)§,
+    \item vision du tableau bidimensionnel comme tableau monodimensionnel: §*(*a+ i*m+j)§ soit §*(&a[0][0]+ i*m+j)§. 
+\end{enumerate}
+
+\subsubsection{Allocation dynamique de tableaux}\index{tableaux:allocation dynamique}\index{allocations:tableaux}\index{malloc}
+    
+\begin{cpp}
+int *pa;
+pa = ( int *)malloc(100); /* est une façon d'allouer dynamiquement un tableau de 100 entiers */
+
+char *chaine;
+chaine = malloc(30); /*    est une façon d'allouer dynamiquement un tableau de 30 caractères, soit une chaîne de 30 caractères. */
+
+truc *ptruc; /* où le type truc  est défini par ailleurs */
+ptruc = (truc *)malloc(10*sizeof(truc)); 
+ptruc = malloc(10*sizeof(truc)); 
+/* sont des façons d'allouer dynamiquement un tableau de 10 trucs. */
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Chaînes de caractères}\label{sec:chaine}\index{chaînes de caractères}  
+
+En langage C, une chaîne de caractères est habituellement défini par un tableau de caractères. Le dernier caractère d'une chaîne est le caractère spécial §'\0'§.
+
+\begin{cpp}
+char a[10] = "Claude";
+char b[10] = { 'C','l','a','u','d','e','\0' }; 
+a[2]='o';  
+a[3]='\0'; /* a contient alors la chaîne "Clo" */
+
+char a[] = "Claude"; /* réserve la place suffisante pour la chaîne, soit ici un tableau de 7 caractères */ 
+\end{cpp}
+
+Le type chaine n'est pas prédéfini, il est utile de le définir:
+\begin{cppsyntaxe}
+typedef char chaine[30];
+/* déclaration du type chaîne de 30 caractères, numérotés de 0 à 29, seuls 29 caractères sont utilisables à cause du caractère de fin */
+\end{cppsyntaxe}
+
+
+
+L'affectation d'une chaîne à une valeur ne peut se faire en utilisant l'opérateur §=§, car il y aurait copie d'adresse uniquement et de plus, un tableau est un pointeur constant. L'affectation est donc réalisé à l'aide du sous-programme §strcpy§ de la bibliothèque standard.
+
+\index{affectations!chaînes de caractères}\index{strcpy} 
+     
+\begin{cpp}
+char a[10];
+strcpy(a,"Crac"); /* a = "Crac" est impossible */
+
+typedef char couleur[10];
+couleur drapeau[3];
+/* drapeau  est un tableau de 3 pointeurs sur des caractères */
+        
+strcpy(drapeau[0], "bleu");
+strcpy(drapeau[1], "blanc");
+strcpy(drapeau[2], "rouge");
+
+/* ou */
+char *drapeau[3] = { "bleu","blanc","rouge" };
+\end{cpp}
+
+D'autres sous-programmes (comparaison, concaténation, \etc) de manipulation de chaînes de caractères sont disponibles dans la bibliothèque standard §string.h§  (\cf~\ref{sec:string.h}).
+
+%--------------------------------------------------------------------
+\subsection{Structures}\index{structures}\index{enregistrement}\index{struct}
+
+\subsubsection{Définition}
+
+Le mot réservé §struct§ permet de définir son propre type structuré composé de champs. Une structure est communément appelée \emph{enregistrement}.
+
+\begin{cppsyntaxe}
+struct nom_de_la_structure { déclarations_des_champs; };
+\end{cppsyntaxe}
+
+Exemples:
+
+\begin{cpp}
+struct complexe {
+         float x,y; };
+         
+struct complexe a,b; /* a et b sont deux variables de type complexe */
+
+struct date { 
+        char jour[10];
+        char mois[12];    
+        int annee; }  d1, d2; /* d1 et d2 sont deux variables de type date */
+\end{cpp}
+
+Pour éviter de répéter le mot §struct§ lors de la déclaration des variables, on peut définir un nouveau type à l'aide de §typedef§:
+
+\begin{cpp}
+typedef struct { 
+          int dim; 
+          float t[30]; } vecteur;
+
+vecteur v;
+
+typedef struct {
+          int jour;
+          char mois[12];
+          int  annee; } date;
+          
+date d;
+          
+typedef struct {
+          char nom[20],prenom[20];
+          date date_de_naissance; } individu;
+
+individu  moi, lui, classe[30];
+
+/* moi et lui  sont deux variables de type individu, classe un tableau de 30 individus */
+\end{cpp}
+
+On peut définir des structures récursives ou auto-référencées en utilisant typedef.
+
+\begin{cpp}
+typedef struct { 
+            individu valeur; 
+            struct noeud *fils_droit;
+            struct noeud *fils_gauche; } noeud;
+
+noeud  *arbre; /* arbre est une variable pointeur sur un noeud  */
+\end{cpp}
+
+\subsubsection{Affectation et initialisation}\index{affectations!structures}
+
+L'affectation s'effectue globalement sur tous les membres des structures.
+\begin{cpp}
+d1 = d2;
+moi = lui;
+\end{cpp}
+
+On peut aussi initialiser une structure lors de sa déclaration :
+\begin{cpp}
+individu toto = {"Dupond","Pierre",{12,"Mars",1975}};
+\end{cpp}
+
+\subsubsection{Accès aux champs}\index{champs}\index{.}
+
+L'accès aux champs se fait par l'ajout d'un point après l'identificateur suivi du nom du champ.
+
+\begin{cpp}
+v.dim=2;
+v.t[2]=12;
+
+a.x=0;
+a.y=1; /* a est le complexe 0+i */ 
+
+d={30,"Mars",1976};
+ 
+moi.date_de_naissance=d;
+lui.date_de_naissance.jour=4;
+classe[1].date_de_naissance.annee=1985;
+\end{cpp}
+
+\begin{remark}
+L'accès aux champs d'une structure pointée peut être simplifié par la notation §->§ : §X->Y§ signifie §(*X).Y§ soit le champ §Y§ de la structure pointée par §X§. \index{->}
+\end{remark}
+
+\begin{cpp}
+individu *toto;        /* toto est un pointeur sur un individu */
+toto=malloc(sizeof(individu));
+toto->date_de_naissance.annee=1996
+/* équivalent à :  (*toto).date_de_naissance.annee = 1996 */
+\end{cpp}
+
+
+%--------------------------------------------------------------------
+\subsection{Unions}\index{unions}\index{union}
+
+Le mot réservé §union§ permet de définir des variables pouvant contenir des valeurs de types différents.
+
+\begin{cpp}
+typedef union {
+          struct { int x,y; } cartesien;
+          struct { float rho,teta; } polaire;
+          } complexe;
+
+complexe a;
+\end{cpp}
+
+Un complexe peut contenir soit une structure de deux entiers, soit une structure de deux réels.
+
+Ainsi, les notations suivantes sont licites :    §a§, §a.cartesien§,  §a.cartesien.x§, §a.cartesien.y§, §a.polaire§, §a.polaire.rho§, §a.polaire.teta§.
+
+\begin{cpp}
+typedef enum { CERCLE = 1, RECTANGLE } type_dessin;
+    
+typedef struct { 
+          type_dessin  figure;
+          union {   
+            struct { float centre_x,centre_y,rayon; } cercle; 
+            struct { float centre_x,centre_y,longueur,largeur;} rectangle;
+            } primitive_dessin;
+          } objet_graphique;
+
+objet_graphique c,r;    
+\end{cpp}
+
+On peut donc écrire: §c.figure§, §c.primitive_dessin§, §c.primitive_dessin.cercle§, 
+
+§c.primitive_dessin.cercle.rayon§, §r.figure§, §r.primitive_dessin§, 
+
+§r.primitive_dessin.rectangle§, §r.primitive_dessin.rectangle.largeur§.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Structures de contrôle}\index{structures de contrôle}
+
+%--------------------------------------------------------------------
+\subsection{Blocs et portée des déclarations}\index{blocs}\index{portée}
+
+Une instruction est une expression suivie d'un point-virgule.
+
+\begin{cpp}
+i=1;
+k++;
+l=produit(a,b);
+\end{cpp}
+
+Un bloc est une suite d'instructions entre deux accolades. Les instructions sont exécutées en séquence, dans l'ordre de leur écriture. Un bloc est une instruction composée. Par conséquent, partout où une instruction est licite, on peut placer un bloc.
+
+\begin{cpp}
+{
+  i=1;
+  k++;
+  l=produit(a,b);
+}
+\end{cpp}
+
+Une variable peut être déclarée dans n'importe quel bloc, sous les conditions suivantes :
+\begin{itemize}
+    \item elle doit être déclarée avant toute instruction du bloc,
+    \item sa portée (son existence) est limitée au bloc où elle est déclarée.
+\end{itemize}
+
+Elle est alors connue et accessible dans le bloc et les blocs emboîtés.
+
+\begin{cpp}
+{ 
+  int i; 
+  i=1; 
+  ..
+  { 
+    float k=0;
+    k=i+1; /* ici i est accessible */
+    ...
+  }
+  i=2;  /* ici k n'est pas accessible */
+  ...
+  { 
+    int i=10;    /* on a ici un i propre au bloc emboîté */
+    ...
+  }
+  /* on retrouve ici le i du bloc englobant qui vaut 2 */     
+} 
+\end{cpp}
+
+
+
+
+%--------------------------------------------------------------------
+\subsection{Instructions de choix~: if, switch}
+
+\subsubsection{Instruction if}\index{if}\index{else}\index{structures de contrôle!si alors sinon}\index{si alors sinon}
+
+
+\begin{cppsyntaxe}
+if (expression)
+    instruction1;
+else 
+    instruction2;
+\end{cppsyntaxe}
+
+
+
+L'expression peut être de type entier, énuméré, réel ou pointeur. L'instruction 1 est exécutée si l'expression a une valeur non nulle, l'instruction 2 est exécutée si l'expression a une valeur nulle.\medskip
+
+La partie §else§ est facultative.
+
+\begin{cpp}
+if (i==j)
+  i++;
+  
+if (a>b)
+  max=a; 
+else 
+  max=b;
+  
+if ((a>b)&&(i>j)) { 
+  a=i; 
+  b=j;
+} else { 
+  a=j;
+  b=i; 
+}
+\end{cpp}
+
+\subsubsection{Instruction switch}\index{switch}\index{structures de contrôle!choix multiples}
+
+C'est une instruction à choix multiples. Elle permet de remplacer des séquences ou des cascades de §si§.
+
+
+\begin{cppsyntaxe}
+switch ( expression ) {
+    case constante1 : instructions1;
+    case constante2 : instructions2;
+    ...
+    case constanten : instructionsn;
+    default         : instructions;
+}
+\end{cppsyntaxe}
+
+
+        
+L'expression doit être de type entier ou énuméré. Le type des constantes doit être le même que celui de l'expression.\medskip
+
+Suivant la valeur de l'expression, le branchement s'effectue au cas correspondant et \emph{tout} ce qui suit est exécuté jusqu'à la rencontre d'un §break§.\index{break} Si aucune constante n'est égale à l'expression, le branchement se fait sur §default§. Ce cas §default§ est facultatif.
+
+\begin{cpp}
+char c; 
+int i=0,j=0,k=0; 
+...
+switch (c) {
+  case 'a' : i=1; 
+  case 'b' : j=1; 
+  case 'c' : k=1; break;
+  case 'q' : j=2; break;
+  default  : k=2;
+}  
+\end{cpp}
+
+On peut grouper plusieurs constantes, comme dans l'exemple suivant :
+
+\begin{cpp}
+int i,k; 
+...
+switch ( i%6 ) {
+  case 0 : k++; break;
+  case 1 :  
+  case 2 : k--; break;
+  case 3 : 
+  case 4 : 
+  case 5 : k*=2; break;
+}  
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Instructions d'itérations : while, do, for}
+
+\subsubsection{Instruction while}\index{while}\index{structures de contrôle!tant que}\index{tant que}
+
+
+\begin{cppsyntaxe}
+while (expression)
+    instruction;
+\end{cppsyntaxe}
+
+
+
+L'instruction est exécutée tant que l'expression a une valeur non nulle.        
+
+\begin{cpp}
+int compteur=0;
+while (compteur<10) {   
+  ...
+  compteur++; 
+}
+\end{cpp}
+
+\subsubsection{Instruction do}\index{do}\index{structures de contrôle!répéter}\index{répéter}
+
+
+\begin{cppsyntaxe}
+do
+    instruction;
+while (expression);
+\end{cppsyntaxe}
+
+
+
+Contrairement au §while§, l'instruction est exécutée avant la première évaluation de l'expression.
+  
+\begin{cpp}
+s=0;
+i=1;
+do {
+  s+=a[i]*b[i]; 
+  i++;
+} 
+while (i<=10);
+\end{cpp}
+        
+\subsubsection{Instruction for}\index{for}\index{structures de contrôle!pour}\index{pour}
+
+\begin{cppsyntaxe}
+for (expression1; expression2; expression3)
+    instruction;
+\end{cppsyntaxe}
+
+L'instruction §for§ est équivalente à :     
+\begin{cpp}
+expression1;
+while (expression2) { 
+    instruction;
+    expression3
+};
+\end{cpp}
+
+Exemples: 
+\begin{cpp}
+s=0;  
+for (i=1;i<=n;i++) 
+  s+=a[i]*b[i];
+
+for (i=0;i<10;i++) {
+  if (a[i]) {
+    k=0; 
+  }
+  a[i]=i; 
+}
+\end{cpp}
+
+Une boucle §for§ peut utiliser une variable de type énumérée. De plus, les expressions et l'instruction peuvent être vides, c'est-à-dire omises (mais les points-virgules restent !).
+\begin{cpp}
+s=0;  
+i=1; 
+for (;  i<=n; i++)
+  s+=a[i]*b[i];
+
+s=0;  
+for (i=1; i<=n; ) { 
+  s+=a[i]*b[i];
+  i++;
+}
+
+for (s=0, i=1; i<=n; s+= [i]*b[i], i++) ;
+\end{cpp}
+
+
+                                 
+%--------------------------------------------------------------------
+\subsection{Instructions de ruptures de séquence}\index{rupture de séquence}
+ 
+\subsubsection{Instruction goto}\index{goto}
+
+Toute instruction peut être précédée d'une étiquette (suivie de : ) à laquelle peut se référer une instruction §goto§.
+L'étiquette et les §goto§ s'y référant doivent appartenir à la même fonction.
+
+\begin{cpp}
+i=1;  
+... 
+if (k==i) 
+  goto ailleurs;
+...  
+ailleurs : i=2; 
+...
+\end{cpp}
+
+\begin{remark}
+L'instruction §goto§ est héritée des instructions de saut des langages machines mais il est recommandé de ne plus l'utiliser depuis les années 70... 
+\end{remark}
+
+\subsubsection{Instruction break}\index{break}
+
+L'instruction §break§ permet de sortir d'une itération §while§, §do§, §for§ ou d'une instruction de choix multiple §switch§.
+ 
+\begin{cpp}
+s=0;
+for (i=1;; i++) { 
+  if (i>n) 
+    break; 
+  s+=a[i]*b[i]; 
+}
+/* le break est le seul moyen de sortir d'une telle boucle */
+\end{cpp}
+
+\begin{remark}
+L'instruction §break§ introduit une rupture dans la séquence qui peut conduire à des traitements inachevés, il convient donc de l'utiliser avec parcimonie.
+\end{remark}
+
+L'instruction §continue§ permet d'ignorer le reste des instructions du corps de l'itération et à passer directement à l'itération suivante.\index{continue}
+
+\begin{cpp}
+s=0;
+for (i=1; i<=n; i++)
+{
+  if (s>max)
+    break;
+  else
+    s+=a[i];
+}
+
+i=0; 
+s=0;
+while (i<=n+1) { 
+  i++;
+  if (i%2) 
+    continue;  
+  s+=a[i]; 
+}
+\end{cpp}
+
+\subsubsection{Instruction exit}\index{exit}\label{sec:exit}
+
+La fonction §void exit(int valeur);§ termine l'exécution du programme. Elle peut se placer n'importe où dans le programme ou dans une fonction.
+
+Par convention, une valeur nulle (on peut aussi utiliser la constante nulle §EXIT_SUCCESS§) signifie que le programme s'est terminé normalement, une valeur non nulle signifie que le programme s'est terminé avec une erreur (constante §EXIT_FAILURE§).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fonctions}\index{fonctions}\index{sous-programme}
+
+%--------------------------------------------------------------------
+\subsection{En-tête d'une fonction (ou signature, ou prototype)}\index{protoptype}\index{en-tête}\index{signature}\index{fonction!en-tête}
+
+
+\begin{cppsyntaxe}
+type nom_de_la_fonction ( liste_de_paramètres_formels );
+\end{cppsyntaxe}
+
+
+
+Les paramètres de la liste sont séparés par des virgules.
+La liste des paramètres peut être vide (§void§).\medskip
+
+Une fonction retourne une valeur du type indiqué. Si le type de la fonction n'est pas précisé, la fonction est par défaut de type §int§.\medskip
+
+Une fonction peut ne rien retourner (procédure); elle sera alors déclarée de type §void§.\index{procédures}
+
+\begin{cpp}
+int puissance (int x, int y);
+/* retourne l'entier x puissance y */
+
+void message_d_alerte(void);
+/* ne retourne rien */
+
+complexe *add_complexe(complexe a, complexe b);
+/* retourne un pointeur sur le résultat complexe a+b */
+\end{cpp}
+
+Le nom des arguments est facultatif dans les prototypes de fonctions; les types suffisent.
+
+\begin{cpp}
+int puissance(int,int);
+
+complexe *add_complexe(complexe,complexe);
+\end{cpp}
+
+L'en-tête d'une fonction peut être placée avant son utilisation, la fonction elle-même pouvant alors être décrite en dehors du programme ou dans un autre fichier.
+
+%--------------------------------------------------------------------
+\subsection{Définition d'une fonction (corps)}\index{définition}\index{corps}\index{fonction!définition}
+
+
+\begin{cppsyntaxe}
+type  nom_de_la_fonction ( liste_de_paramètres_formels ) {
+    déclarations;
+    instructions;
+    return ...;
+}
+\end{cppsyntaxe}
+
+La valeur retournée se fait par l'instruction §return§ qui provoque ensuite la sortie de la fonction.
+
+\begin{cppsyntaxe}
+return expression;
+\end{cppsyntaxe}
+
+Les fonctions peuvent naturellement être récursives.
+
+\begin{cpp}
+int puissance(int x, int y) {
+    int   i, r  = 1;
+    for (i=1; i<=y; i++) 
+        r*=x;
+    return r;    
+} /* retourne x puissance y */
+
+typedef struct { float  x, y; }  complexe;
+
+complexe sous_complexe(complexe a, complexe b) 
+{   complexe   r;
+    r.x = a.x-b.x;   r.y = a.y-b.y;
+    return r; 
+} /* retourne le résultat complexe a-b */
+
+complexe   *add_complexe ( complexe a, complexe b ) 
+{   complexe  *r;
+    r=malloc(sizeof(complexe));
+    r->x = a.x+b.x;   r->y = a.y+b.y;
+    return r; 
+} /* retourne un pointeur sur le résultat complexe a+b */
+
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Passage des paramètres}\index{paramètres}\index{passage!par valeur}
+\label{sec:passage_des_paramètres}
+
+En C, le seul type de passage de paramètres est le passage par valeur.
+La valeur d'une variable passée en paramètre ne peut donc être modifiée!
+
+\begin{cpp}
+int fois_deux(int i) { 
+    i=i*2;
+    return i;
+}
+
+/* L'appel : */
+i=3;  
+j=fois_deux(i);
+/* ne modifie pas la valeur de i. */
+
+void echange float x, float y ) { 
+    float z=x;
+    x=y;
+    y=z;
+}
+
+/* L'appel : */
+echange(a,b);
+/* n'échange pas les valeurs de a et b. */
+\end{cpp}
+
+Donc, si l'on veut modifier des paramètres ou calculer plusieurs résultats par une fonction, il faut transmettre l'adresse de ces paramètres.\index{passage!par adresse}
+Les paramètres formels de la fonction seront donc des pointeurs et les paramètres effectifs des constantes adresses ou des variables pointeurs.
+
+\begin{cpp}
+int fois_deux(int *i) {
+    *i=*i*2;
+    return *i;
+}
+
+/* L'appel : */
+i=3;
+j=fois_deux(&i);
+/* modifie la valeur de i. */
+
+void echange(float *x,float *y) { 
+    float z=*x;
+    *x=*y;
+    *y=z;
+}
+
+/* L'appel : */
+echange(&a,&b);
+/* échange les valeurs de a et b. */
+\end{cpp}
+
+\medskip
+Le mot réservé §const§ dans la signature d'une fonction permet de préciser    que le contenu du paramètre ne sera pas modifié.\index{const}
+
+
+\begin{cpp}
+void ecrire(const char message[]);
+
+float prod_scalaire(const float a[], const float b[], int  n);
+\end{cpp}
+
+Rappelons que l'identificateur de tableau est assimilé à un pointeur. Par conséquent, un tableau passé en paramètre est forcément passé par adresse.
+
+\begin{cpp}
+void mult_2_tab ( float  a[20], int  n) {
+    int i;  
+    for ( i =1; i<=n; i++)
+        a[i] = 2*a[i];
+}
+
+/* L'appel : */
+mult_2_tab(t,10);
+/* va modifier le tableau t. */
+\end{cpp}
+    
+On peut utiliser cette particularité pour les chaînes de caractères implantées comme tableaux. Cela permet également de ne pas dimensionner les tableaux en paramètres : 
+
+\begin{cpp}
+void mult_2_tab ( float  a[], int  n)
+\end{cpp}
+
+
+%--------------------------------------------------------------------
+\subsection{Programme principal}\index{programme principal}\index{main}
+
+Le programme principal est lui-même une fonction de nom §main()§ qui sera exécutée en premier. 
+
+\begin{cpp}
+#include <stdio.h>
+
+int main(void) {
+    printf("Hello, World!\n");
+    return 0;
+}
+\end{cpp}
+
+%La structure générale d'un programme C peut donc être :
+%\begin{cppsyntaxe}
+%déclarations
+%
+%prototypes de fonctions 
+%
+%int main() { déclarations
+%    instructions
+%}
+%
+%définitions des fonctions
+%\end{cppsyntaxe}
+%
+%Exemple :
+%\begin{cpp}
+%typedef  struct { float  x,y; }  complexe;
+%complexe   *add_complexe ( complexe a, complexe b );
+%int   fois_deux ( int *i ); 
+%void  echange (float *x, float *y );
+%
+%int main()
+%{   int i=3, j;  float a=5, b=123.25;
+%    j=fois_deux(&i);     printf("i = %d \n",i);
+%    echange(&a,&b);    printf("a = %f \n",a);    printf("b = %f \n",b);
+%    return 0;
+%}
+%
+%int fois_deux ( int *i )    { *i = *i*2;  return *i; }
+%void echange (float *x, float *y )      { float  z=*x ; *x=*y; *y=z; }
+%complexe *add_complexe ( complexe a, complexe b ) 
+%{ /* corps de la fonction add_complexe */    
+%}
+%\end{cpp}
+
+L'arrêt du programme peut se faire par la fonction  §exit(v)§ (\cf~\ref{sec:exit}).\medskip
+
+La fonction §main()§ possède trois paramètres disponibles. Son prototype officiel est :
+
+\begin{cppsyntaxe}
+int main ( int  argc, char *argv[], char *envp[] ) { ... }
+\end{cppsyntaxe}
+
+
+
+Chacun de ces paramètres est facultatif. Ces paramètres permettent de récupérer et traiter des arguments donnés sur la ligne de commande lors du lancement du programme exécutable :
+\begin{itemize}
+    \item §argc§ est le nombre d'arguments sur la ligne de commande;
+    \item §argv§ est un tableau de pointeurs sur des caractères contenant les arguments de la ligne de commande (§argv[0]§  contient le nom du programme exécutable);
+    \item §envp§ est un tableau de pointeurs vers les variables de l'environnement.
+\end{itemize}
+ 
+
+\begin{cpp}
+/* Soit le programme exécutable prog lancé par la commande   
+   C:\>prog 1   claude
+   
+   argc  vaut  3
+   argv[0]  pointe sur la chaîne  "prog"
+   argv[1]  pointe sur la chaîne  "1"
+   argv[2]  pointe sur la chaîne  "claude" */
+
+void main ( int argc,  char *argv[]) {
+    if  (argc ==0) exit(EXIT_FAILURE);
+        switch  (argv[1][0])
+        {   case '1' : traiter( argv[2] );
+            case '2' : ... 
+              ...   }
+    ...
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Pointeurs sur fonctions}\index{pointeurs!sur fonctions}
+
+Bien que le nom d'une fonction ne soit pas une variable, on peut définir un pointeur sur une fonction de la façon suivante :    
+
+
+\begin{cppsyntaxe}
+type ( *nom_de_la_fonction )  ( liste_de_paramètres_formels );
+\end{cppsyntaxe}
+
+
+
+Ceci est souvent utilisé pour faire des tableaux de fonctions ou passer des fonctions en paramètres.
+
+\begin{cpp}
+float  mult ( float x, float y ) {
+    return x*y;
+};
+float  add  ( float x, float y ) { 
+    return x+y;
+};
+float  sous ( float x, float y ) {
+    return x-y ;
+};
+
+float  operation_fois_mille ( float  (*f) ( float, float ), float x, float y) { 
+    return (*f)(x,y)*1000;
+};
+
+int main() {
+    float a=2, b=3, c;
+    float (*t[3])( float, float );  
+
+    t[0] = mult;  t[1] = add;  t[2] = sous;
+
+    c = (*t[1]) ( a, b );                /* c reçoit add(a,b) */
+    c = operation_fois_mille(sous,a,b); /* c reçoit sous(a,b)*1000 */
+    return 0;
+} 
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Nombre variable de paramètres}\index{paramètres}\index{stdarg.h} 
+
+C propose une façon d'écrire des fonctions ayant un nombre indéterminé de paramètres, comme la fonction §printf(char *format, ... )§.
+
+Le fichier à inclure §stdarg.h§ contient les définitions du type §va_list(liste variable d'arguments)§ et de trois fonctions de manipulation de la liste :
+
+\begin{tabular}{ll}
+    \lstinline§va_start(v,premier)§  & fait pointer v sur le premier argument;\index{va\_start}\\
+    \lstinline§va_arg(v type)§ & retourne l'argument pointé et incrémente le pointeur v\index{va\_arg}\\
+                  & (type est le type de l'argument à retourner);\\
+  \lstinline§va_end(v)§ & doit être appelée en final pour remettre en ordre les pointeurs.\index{va\_end} 
+\end{tabular}
+
+Exemple:
+\begin{cpp}
+int somme(int, ... );
+// calcule la somme d'une liste non vide d'entiers se terminant par 0
+// ...  est l'ellipse pour une liste d'arguments de taille variable
+
+int somme(int e, ... ) {
+    int s,i;
+    va_list v;
+    va_start(v,e);
+    s=e;
+    if (e!=0)
+        while ((i=va_arg(v,int))!=0)
+            s+=i;
+    va_end(v);
+    return s;
+}
+
+...
+j=somme(0);
+j=somme(1,2,0);
+j=somme(2,4,6,8,10,12,0);
+\end{cpp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Classes mémoire des variables}  
+
+Le langage C propose différentes classes d'allocation mémoire pour les variables. Ces classes vont différencier la visibilité, la durée de vie et l'initialisation par défaut des variables.
+
+%--------------------------------------------------------------------
+\subsection{Variable automatique}\index{variables!automatiques}\index{auto}
+
+C'est une variable déclarée dans un bloc. Le mot clé est §auto§. C'est la déclaration par défaut lorsqu'aucun mot clé ne spécifie la déclaration.
+
+La variable est allouée dans la pile d'exécution. La durée de vie et la visibilité de cette variable sont limitées au bloc. L'initialisation sera effectuée à chaque entrée dans le bloc si une initialisation est indiquée; il n'y a pas d'initialisation par défaut.
+
+%--------------------------------------------------------------------
+\subsection{Variable globale}\index{variables!globales}
+
+Une variable globale est déclarée à l'extérieur de tout bloc et de toute fonction. Elle est définie de sa déclaration jusqu'à la fin du fichier. Accessible de n'importe quel endroit du programme, sa durée de vie est le temps d'exécution du programme lui-même. 
+    
+Pour y accéder depuis un autre fichier, il faudra la déclarer externe dans ce dernier. Elle est stockée dans le segment de données du programme et est initialisée à 0 par défaut au chargement du programme.
+
+%--------------------------------------------------------------------
+\subsection{Variable externe}\index{variables!externes}\index{extern}
+
+Le mot clé §extern§ permet de déclarer une variable localement, mais ne lui réserve pas de place mémoire. On peut ainsi accéder à une variable globale définie dans un autre fichier. 
+
+§extern§ est également utilisé pour accéder à une fonction définie dans un autre fichier\footnote{L'inclusion de fichiers d'en-têtes permet d'éviter ces re-déclarations de fonctions.}.
+
+%--------------------------------------------------------------------
+\subsection{Variable statique}\index{variables!statiques}\index{static}
+
+Déclarée par le mot clé §static§, elle ressemble à une variable globale. Sa durée de vie est le temps d'exécution du programme lui-même. Elle est stockée dans le segment de données du programme et est initialisée à 0 par défaut au chargement du programme.
+
+Mais sa visibilité est plus localisée : 
+\begin{itemize}
+    \item définie à l'intérieur d'un bloc, elle n'est visible que dans le bloc;
+    \item définie à l'extérieur de tout bloc, elle n'est visible que dans le fichier et ne peut être accédée à partir d'un autre fichier.
+\end{itemize}
+
+Elle conserve sa valeur d'une exécution du bloc à l'autre.
+
+%--------------------------------------------------------------------
+\subsection{Variable registre}\index{variables!registres}\index{register}
+
+La déclaration d'une telle variable doit être faite à l'intérieur d'un bloc par le mot clé §register§. Le but est de spécifier au compilateur de conserver cette variable dans un registre (si c'est possible) dans un souci d'optimisation de temps d'exécution.
+
+La taille de la variable doit bien sûr être inférieure à la taille d'un registre du processeur et son adresse est inaccessible.
+
+%--------------------------------------------------------------------
+\subsection{Exemple}
+
+\begin{cpp}
+int  g;            /* globale */
+
+int f1();
+
+int main() {
+    int  a;        /* automatique */
+    register  int r;    /* registre */
+    extern int e;    /* externe */        
+    ...
+    { int i = 1;    /* automatique */
+       ...
+     g = i++;
+     a=e;                    /* e est une variable définie dans un autre fichier */
+    }
+    ...
+    a=a+g;
+    return 0;
+}
+
+int f() {
+    int i;        /* automatique */
+    static int n=1;    /* statique, initialisée une seule fois et non à chaque appel de f, n conserve sa valeur entre deux appels de f */
+    ...
+    n++;
+    i=g;    
+}
+\end{cpp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Préprocesseur}\index{préprocesseur}
+
+Le préprocesseur réalise une phase de précompilation dont le but est d'inclure des fichiers, de définir des constantes symboliques et des macro-instructions et de réaliser des compilations conditionnelles.
+
+Les instructions pour le préprocesseur commencent par un §#§.
+
+
+\begin{cppsyntaxe}
+#instruction   arguments
+\end{cppsyntaxe}
+
+
+
+Les instructions possibles sont :    §include§, §define§, §undef§, §if§, §elif§, §else§, §endif§, §ifdef§, §ifndef§. 
+
+%--------------------------------------------------------------------
+\subsection{Inclusion de fichiers}\index{\#include}\index{inclusions de fichiers}
+
+
+\begin{cppsyntaxe}
+#include  <nom_fichier>   /* inclus un fichier du répertoire standard du C */
+#include  "nom_fichier"   /* inclus un fichier quelconque */
+\end{cppsyntaxe}
+
+
+L'inclusion est utilisée pour insérer des fichiers contenant des modules complets ou des fichiers d'en-têtes (traditionnellement suffixés §.h§).
+
+\begin{cpp}
+#include <stdio.h>
+#include <stdlib.h> /* permet d'utiliser tous les types, constantes et fonctions */
+#include <string.h> /* de la bibliothèque standard  */
+#include <math.h> /* dont les en-têtes sont dans ces fichiers */
+#include "vecteur.h"
+#include "matrice.h"
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Constantes symboliques et macro-instructions}\label{sec:macro-instructions}  \index{\#define}\index{constantes}\index{macro-instructions}
+
+L'instruction §#define§ permet de définir des constantes symboliques, d'associer une chaîne de caractères à un identificateur ou d'écrire des macro-instructions.
+
+
+\begin{cppsyntaxe}
+#define  identificateur        
+#define  identificateur   chaîne de caractères        
+#define  identificateur   ( paramètres )  chaîne de caractères        
+\end{cppsyntaxe}
+
+
+Le préprocesseur remplacera alors l'identificateur par la chaîne de caractères.
+
+\begin{cpp}
+#define ERREUR        /* définit la constante symbolique  ERREUR */
+
+#define boolean short
+
+#define  MAX  200
+float  a[MAX];            /* MAX est remplacé par 200 */
+
+#define  MIN(a,b)  (a<b)?a:b
+i = MIN(x,y);             /* MIN(x,y) sera remplacée par (x<y)?x:y  */
+
+#define SUFFIX(nom)  #nom ".cpp"
+ch=SUFFIX(toto)         /* SUFFIX(toto) sera remplacé par  toto.cpp */
+\end{cpp}
+
+Attention aux pièges classiques, par exemple :
+\begin{cpp}
+#define  CARRE(a)  a*a
+x=2;  r = CARRE(x);   /* r = x*x        => r vaut 4 */
+x=2;  r = CARRE(x+1); /* r = x+1*x+1 => r vaut 5 et non 9 */
+x=2;  r = CARRE(x++); /* r = x++*x++ => r vaut 6 et non 9 et x vaut 4 et non 3 */
+\end{cpp}
+
+La commande §#undef  identificateur§ permet de supprimer la définition d'une constante symbolique.    
+
+\begin{cpp}
+#undef ERREUR
+\end{cpp}
+
+
+%--------------------------------------------------------------------
+\subsection{Compilation conditionnelle} \index{compilation conditionnelle} \index{\#if} \index{\#elif}\index{\#else}\index{\#endif}\index{\#ifdef}\index{\#ifndef} 
+
+La compilation conditionnelle peut se faire grâce aux commandes du préprocesseur suivantes :
+
+\begin{cppsyntaxe}
+#if   expression_constante
+#else
+#endif
+\end{cppsyntaxe}
+
+Exemple:
+\begin{cpp}
+#if SYSTEME == SUN 
+#define  FICHIER  "sun.h"
+#elif SYSTEME == MSDOS     /* équivalent  else if */
+#define FICHIER "msdos.h"
+#else    
+#define FICHIER "divers.h"
+#endif
+#include FICHIER
+\end{cpp}
+
+Les commandes §#ifdef§ et §#ifndef§ permettent de tester si une constante symbolique est définie ou non.
+
+\begin{cpp}
+#ifndef PI
+#define PI  3.14159
+#endif
+
+#ifndef matrice_h        /*  texte du fichier matrice.h */
+#define matrice_h
+... /* déclarations du type matrice et des prototypes des fonctions */
+#endif
+\end{cpp}
+
+

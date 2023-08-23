@@ -1,0 +1,339 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Legrand Orange Book
+% LaTeX Template
+% Version 3.1 (February 18, 2022)
+%
+% This template originates from:
+% https://www.LaTeXTemplates.com
+%
+% Authors:
+% Vel (vel@latextemplates.com)
+% Mathias Legrand (legrand.mathias@gmail.com)
+%
+% License:
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+%
+% Compiling this template:
+% This template uses biber for its bibliography and makeindex for its index.
+% When you first open the template, compile it from the command line with the 
+% commands below to make sure your LaTeX distribution is configured correctly:
+%
+% 1) pdflatex main
+% 2) makeindex main.idx -s indexstyle.ist
+% 3) biber main
+% 4) pdflatex main x 2
+%
+% After this, when you wish to update the bibliography/index use the appropriate
+% command above and make sure to compile with pdflatex several times 
+% afterwards to propagate your changes to the document.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+	11pt, % Default font size, select one of 10pt, 11pt or 12pt
+	fleqn, % Left align equations
+	a4paper, % Paper size, use either 'a4paper' for A4 size or 'letterpaper' for US letter size
+	%oneside, % Uncomment for oneside mode, this doesn't start new chapters and parts on odd pages (adding an empty page if required), this mode is more suitable if the book is to be read on a screen instead of printed
+]{LegrandOrangeBook}
+
+\definecolor{ocre}{RGB}{243, 102, 25} % Define the color used for highlighting throughout the book
+
+% Book information for PDF metadata, remove/comment this block if not required 
+\hypersetup{
+	pdftitle={CondenC}, % Title field
+	pdfauthor={Claude Jacquemard et Guillaume Laurent}, % Author field
+	pdfsubject={L'essentiel des langages C et C++}, % Subject field
+	pdfkeywords={C, C++}, % Keywords
+	pdfcreator={LaTeX}, % Content creator field
+	linkcolor=ocre
+}
+
+\addbibresource{sample.bib} % Bibliography file
+
+
+\chapterimage{orange1.jpg} % Chapter heading image
+\chapterspaceabove{6.5cm} % Default whitespace from the top of the page to the chapter title on chapter pages
+\chapterspacebelow{6.75cm} % Default amount of vertical whitespace from the top margin to the start of the text on chapter pages
+
+%----------------------------------------------------------------------------------------
+%	FRENCH
+%----------------------------------------------------------------------------------------
+
+\usepackage[french]{babel}
+\usepackage{textcomp}
+
+\newcommand{\etc}{\emph{etc.} }
+\newcommand{\cf}{\emph{cf.} }
+
+\newenvironment{espace}{%
+	\vspace{3mm}\noindent}%
+	{\vspace{3mm}}
+
+
+%----------------------------------------------------------------------------------------
+%	LISTINGS
+%----------------------------------------------------------------------------------------
+
+\usepackage{listings}
+
+% Cette commande permet d'utiliser §...§ pour insérer du code en ligne, 
+\lstMakeShortInline§
+
+\lstset{language=C++,  
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=flexible, % pour que le code soit copiable
+    keepspaces=true, % pour que le code soit copiable
+    showstringspaces=false
+}
+
+\usepackage[listings,skins]{tcolorbox}
+\tcbuselibrary{breakable}
+
+\newtcblisting{cpp}{
+    listing engine=listings,
+    breakable,
+    listing options={
+        language = C++,
+        breaklines=true,
+        columns=flexible, % pour que le code soit copiable
+        keepspaces=true, % pour que le code soit copiable
+        basicstyle=\small\ttfamily,
+        keywordstyle=\color{DarkBlue},
+        commentstyle=\itshape\color{ForestGreen},
+        showstringspaces=false
+    },
+    listing only,
+    colback=black!5,
+    left=1mm,
+    top=-1mm,
+    bottom=-1mm,
+    frame hidden,
+    enhanced,
+    borderline={0.5pt}{1pt}{ocre}
+}
+
+\newtcblisting{cppsyntaxe}{
+    listing engine=listings,
+    breakable,
+    listing options={
+        language = C++,
+        morekeywords = {type},
+        breaklines=true,
+        columns=flexible, % pour que le code soit copiable
+        keepspaces=true, % pour que le code soit copiable
+        basicstyle=\small\ttfamily,
+        keywordstyle=\color{DarkBlue},
+        commentstyle=\itshape\color{ForestGreen},
+        showstringspaces=false
+    },
+    listing only,
+    colback=green!5!white,
+    left=1mm,
+    top=-1mm,
+    bottom=-1mm,
+    frame hidden,
+    enhanced,
+    borderline={0.5pt}{1pt}{ocre},
+}
+
+\lstdefinelanguage{none}{
+    %sensitive=false,
+    %keywords={run},
+    %otherkeywords={}, 
+    %comment=[l]{//},
+    %morecomment=[s]{/*}{*/},
+    %string=[b]{"},
+    %morestring=[b]{'},
+    %inputencoding=latin1, % ne sert à rien ?
+    %extendedchars= true,
+   %mathescape=true
+}
+
+\newtcblisting{console}{
+    listing engine=listings,
+    breakable,
+    listing options={
+        language=none,
+        basicstyle=\color{green}\ttfamily\small,
+        frame=none,
+    },
+    listing only,
+    colback=black,
+    left=1mm,
+    top=-1mm,
+    bottom=-1mm,
+    frame hidden,
+    enhanced,
+    borderline={0.5pt}{1pt}{ocre},
+}
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\newcommand\HUGE{\fontsize{50}{60}\selectfont}
+
+\begin{document}
+
+\titlepage % Output the title page
+	{\includegraphics[width=\paperwidth]{background.pdf}} % Code to output the background image, which should be the same dimensions as the paper to fill the page entirely; leave empty for no background image
+	{ % Title(s) and author(s)
+		\centering\sffamily % Font styling
+		{\HUGE\bfseries CondenC\par} % Book title
+		\vspace{16pt} % Vertical whitespace
+		{\LARGE L'essentiel des langages C et C++\par} % Subtitle
+		\vspace{24pt} % Vertical whitespace
+		{\huge\bfseries Claude Jacquemard et Guillaume Laurent\par} % Author name
+	}
+
+%----------------------------------------------------------------------------------------
+%	COPYRIGHT PAGE
+%----------------------------------------------------------------------------------------
+
+\thispagestyle{empty} % Suppress headers and footers on this page
+
+~\vfill % Push the text down to the bottom of the page
+
+\noindent Copyright \copyright\ 2014 Claude Jacquemard et Guillaume Laurent\\ % Copyright notice
+
+%\noindent \textsc{Published by Publisher}\\ % Publisher
+
+%\noindent \textsc{\href{https://www.latextemplates.com/template/legrand-orange-book}{book-website.com}}\\ % URL
+
+%\noindent Licensed under the Creative Commons Attribution-NonCommercial 4.0 License (the ``License''). You may not use this file except in compliance with the License. You may obtain a copy of the License at \url{https://creativecommons.org/licenses/by-nc-sa/4.0}. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \textsc{``as is'' basis, without warranties or conditions of any kind}, either express or implied. See the License for the specific language governing permissions and limitations under the License.\\ % License information, replace this with your own license (if any)
+
+\noindent Cette \oe{}uvre est mise à disposition selon les termes de la licence internationale Creative Commons CC BY-NC-SA 4.0 (attribution - pas d'utilisation commerciale - partage dans les mêmes conditions).  Une copie de la licence est disponible à l'adresse \url{https://creativecommons.org/licenses/by-nc-sa/4.0}\\
+
+%https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr
+
+\noindent La mise en page a été réalisée avec le style \emph{The Legrand Orange Book} de Mathias Legrand disponible à l'adresse \url{https://www.latextemplates.com/template/legrand-orange-book}
+
+%\textsc{\href{https://www.latextemplates.com/template/legrand-orange-book}{book-website.com}}\\ % URL
+
+%\noindent \textit{First printing, March 2022} % Printing/edition date
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+
+\pagestyle{empty} % Disable headers and footers for the following pages
+
+\tableofcontents % Output the table of contents
+
+%\listoffigures % Output the list of figures, comment or remove this command if not required
+
+%\listoftables % Output the list of tables, comment or remove this command if not required
+
+\pagestyle{fancy} % Enable default headers and footers again
+
+\cleardoublepage % Start the following content on a new page
+
+\noindent
+
+%----------------------------------------------------------------------------------------
+%	PART 1
+%----------------------------------------------------------------------------------------
+
+\part{Langage C}
+
+\chapterimage{orange2.jpg} % Chapter heading image
+\chapterspaceabove{6.75cm} % Whitespace from the top of the page to the chapter title on chapter pages
+\chapterspacebelow{7.25cm} % Amount of vertical whitespace from the top margin to the start of the text on chapter pages
+
+\input{Chapitre_C.tex}
+
+\input{Chapitre_Std_C.tex}
+
+%----------------------------------------------------------------------------------------
+%	PART 2
+%----------------------------------------------------------------------------------------
+
+\part{Langage C++}
+
+\chapterimage{orange3.jpg} % Chapter heading image
+
+\input{Chapitre_C++.tex}
+
+\input{Chapitre_Std_C++.tex}
+
+
+%----------------------------------------------------------------------------------------
+
+\stopcontents[part] % Manually stop the 'part' table of contents here so the previous Part page table of contents doesn't list the following chapters
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+%\chapterimage{} % Chapter heading image
+%\chapterspaceabove{2.5cm} % Whitespace from the top of the page to the chapter title on chapter pages
+%\chapterspacebelow{2cm} % Amount of vertical whitespace from the top margin to the start of the text on chapter pages
+%
+%%------------------------------------------------
+%
+%\chapter*{Bibliography}
+%\markboth{\sffamily\normalsize\bfseries Bibliography}{\sffamily\normalsize\bfseries Bibliography} % Set the page headers to display a Bibliography chapter name
+%\addcontentsline{toc}{chapter}{\textcolor{ocre}{Bibliography}} % Add a Bibliography heading to the table of contents
+%
+%\section*{Articles}
+%\addcontentsline{toc}{section}{Articles} % Add the Articles subheading to the table of contents
+%
+%\printbibliography[heading=bibempty, type=article] % Output article bibliography entries
+%
+%\section*{Books}
+%\addcontentsline{toc}{section}{Books} % Add the Books subheading to the table of contents
+%
+%\printbibliography[heading=bibempty, type=book] % Output book bibliography entries
+
+%----------------------------------------------------------------------------------------
+%	INDEX
+%----------------------------------------------------------------------------------------
+
+\chapterimage{orange1.jpg}
+
+\cleardoublepage % Make sure the index starts on an odd (right side) page
+\phantomsection
+\addcontentsline{toc}{chapter}{\textcolor{ocre}{Index}} % Add an Index heading to the table of contents
+\printindex % Output the index
+
+%----------------------------------------------------------------------------------------
+%	APPENDICES
+%----------------------------------------------------------------------------------------
+
+%\chapterimage{orange2.jpg} % Chapter heading image
+%\chapterspaceabove{6.75cm} % Whitespace from the top of the page to the chapter title on chapter pages
+%\chapterspacebelow{7.25cm} % Amount of vertical whitespace from the top margin to the start of the text on chapter pages
+%
+%\begin{appendices}
+%
+%\renewcommand{\chaptername}{Appendix} % Change the chapter name to Appendix, i.e. "Appendix A: Title", instead of "Chapter A: Title" in the headers
+%
+%%------------------------------------------------
+%
+%\chapter{Appendix Chapter Title}
+%
+%\section{Appendix Section Title}
+%
+%Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam auctor mi risus, quis tempor libero hendrerit at. Duis hendrerit placerat quam et semper. Nam ultricies metus vehicula arcu viverra, vel ullamcorper justo elementum. Pellentesque vel mi ac lectus cursus posuere et nec ex. Fusce quis mauris egestas lacus commodo venenatis. Ut at arcu lectus. Donec et urna nunc. Morbi eu nisl cursus sapien eleifend tincidunt quis quis est. Donec ut orci ex. Praesent ligula enim, ullamcorper non lorem a, ultrices volutpat dolor. Nullam at imperdiet urna. Pellentesque nec velit eget est euismod pretium.
+%
+%%------------------------------------------------
+%
+%\chapter{Appendix Chapter Title}
+%
+%\section{Appendix Section Title}
+%
+%Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam auctor mi risus, quis tempor libero hendrerit at. Duis hendrerit placerat quam et semper. Nam ultricies metus vehicula arcu viverra, vel ullamcorper justo elementum. Pellentesque vel mi ac lectus cursus posuere et nec ex. Fusce quis mauris egestas lacus commodo venenatis. Ut at arcu lectus. Donec et urna nunc. Morbi eu nisl cursus sapien eleifend tincidunt quis quis est. Donec ut orci ex. Praesent ligula enim, ullamcorper non lorem a, ultrices volutpat dolor. Nullam at imperdiet urna. Pellentesque nec velit eget est euismod pretium.
+%
+%%------------------------------------------------
+%
+%\end{appendices}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}

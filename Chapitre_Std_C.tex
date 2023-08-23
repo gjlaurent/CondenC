@@ -1,0 +1,563 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Bibliothèques standards du C}
+
+Ce chapitre présente une sélection des possibilités offertes par la bibliothèque standard du C.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Entrées/sorties sur les fichiers standards}\index{entrées/sorties}\index{stdio.h}
+
+Les fonctions d'entrées-sorties sont accessibles par l'inclusion §#include <stdio.h>§. 
+
+Trois unités standards d'entrée-sortie sont ouvertes à l'exécution d'un programme :
+\begin{itemize}
+    \item \lstinline§stdin§ l'entrée standard;
+    \item \lstinline§stdout§ la sortie standard;
+    \item \lstinline§stderr§ l'erreur standard.
+\end{itemize}
+
+Sans redirection, par défaut §stdin§ est associé au clavier, §sdtout§ et §stderr§ à l'écran.\index{stdin}\index{stdout}\index{stderr}
+
+%Les fichiers d'entrées/sorties standards sont par défaut le clavier et l'écran.
+
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties de caractères}\index{entrées/sorties!caractères}\index{getchar}\index{putchar}
+
+En-têtes:
+\begin{cppsyntaxe}
+int getchar(void); 
+/* retourne un caractère lu sur l'entrée standard (par défaut le clavier) */
+
+int putchar(int c);
+/* écrit le caractère c sur la sortie standard (par défaut l'écran) */
+\end{cppsyntaxe}
+
+Exemple d'utilisation:
+\begin{cpp}
+char c;
+c=getchar();  
+if (c!='\n') 
+    putchar(c); 
+else
+    putchar('F');
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties de chaînes de caractères}\index{entrées/sorties!chaînes de caractères}\index{gets}\index{puts}
+
+En-têtes:
+\begin{cppsyntaxe}
+char *gets(char *s);
+/* lit une chaîne de caractères sur l'entrée standard et la range dans s (le caractère de fin de ligne est remplacé par le caractère de fin de chaîne '\0') */
+
+int puts(const char *s); 
+/* écrit la chaîne s suivie d'un retour à la ligne sur la sortie standard */
+\end{cppsyntaxe}
+
+Exemple d'utilisation:
+\begin{cpp}
+char s[20];
+gets(&s); 
+puts(s);
+
+char *ss;
+ss=malloc(20);
+gets(ss);
+puts(ss);
+\end{cpp}
+
+
+
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties formatées}
+\index{entrées/sorties!formatées}\index{scanf}\index{printf} 
+
+§scanf()§ et §printf()§ sont utilisées pour entrer et sortir des variables de types quelconques, suivant un format précisé.
+
+En-têtes:
+\begin{cppsyntaxe}
+int scanf(const char *format, liste_d_adresses_de_variables);
+/* range dans la liste de variables les valeurs lues sur l'entrée standard,
+   suivant le format précisé dans la chaîne de caractères
+   et retourne le nombre de valeurs correctement affectées. */
+
+int printf(const char *format, liste_d_expressions);
+/* écrit les valeurs des expressions sur la sortie standard,
+  suivant les formats répartis dans la chaîne de caractères
+  et retourne le nombre de caractères transmis en sortie. */
+\end{cppsyntaxe}
+
+\begin{remark}
+Si \lstinline§liste_d_expressions§ est vide, \lstinline§printf§ écrit la chaîne de caractères contenue dans le format (par exemple \lstinline§printf("Hello world !");§).
+\end{remark}
+
+Un élément de format général est de la forme §%[aligne][taille][.précis][T][type]§ 
+\iffalse § \fi
+où les différents éléments (facultatifs) sont :
+\begin{itemize}
+    
+    \item    \lstinline§aligne§ indique l'alignement souhaité :
+     
+\begin{tabular}{ll}
+\lstinline§+§ &    les valeurs numériques seront précédées de + ou - \\
+\lstinline§-§ &    alignement à gauche  ( par défaut, alignement à droite ) 
+\end{tabular}
+    
+    \item \lstinline§taille§ indique le nombre de caractères minimum;
+    
+    \item \lstinline§précis§ indique la précision retenue pour l'affichage :
+
+\begin{tabular}{ll}
+            nombre minimum de chiffres pour les types entiers (\lstinline§i§, \lstinline§d§, \lstinline§o§, \lstinline§u§, \lstinline§x§, \lstinline§X§)\\
+            nombre de chiffres après la virgule pour les types réels (\lstinline§e§, \lstinline§E§, \lstinline§f§, \lstinline§F§)\\
+            nombre maximum de chiffres significatifs pour le type réel (\lstinline§g§, \lstinline§G§)\\
+            nombre maximum de caractères pour le type chaîne de caractères (\lstinline§s§)
+\end{tabular}
+    
+    \item \lstinline§T§
+
+\begin{tabular}{ll}
+\lstinline§l§ & indique une valeur entière au format long pour les types entiers (\lstinline§i§, \lstinline§d§, \lstinline§o§, \lstinline§u§, \lstinline§x§, \lstinline§X§)\\ 
+& ou une valeur réelle au format double pour les types réels (\lstinline§e§, \lstinline§f§, \lstinline§g§)\\
+\lstinline§h§ & indique une valeur entière au format court pour les types entiers (\lstinline§i§, \lstinline§d§, \lstinline§o§, \lstinline§u§, \lstinline§x§, \lstinline§X§)
+\end{tabular}
+
+    \item \lstinline§type§    indique le type de l'affichage :
+
+\begin{tabular}{ll}
+\lstinline§c§ & caractère\\
+\lstinline§s§ &    chaîne de caractères\\
+\lstinline§i§ ou \lstinline§d§ & entier décimal \\
+\lstinline§x§ ou \lstinline§X§ & entier hexadécimal\\
+\lstinline§u§ & entier non signé\\
+\lstinline§f§ ou \lstinline§F§ & réel en virgule fixe\\
+\lstinline§e§ ou \lstinline§E§ & réel en virgule flottante\\
+\lstinline§g§ ou \lstinline§G§ & le plus court des types réels\\ 
+\lstinline§p§    & pointeur
+\end{tabular}\\
+\end{itemize}
+
+\begin{remark}
+Le caractère \lstinline§'\n'§  fait changer de ligne.
+\end{remark}
+
+Exemple:
+\begin{cpp}
+int i;
+float r; 
+char *ch,*form;
+
+printf("entrer la valeur de i : ");  
+scanf("%d",&i); 
+printf("i  =  %d\n",i);
+
+ch = (char *)malloc(20*sizeof(char));
+
+scanf("%d%f%s", &i , &r , ch ); 
+printf("i  =  %5d  r = %10.3e  ch =%s\n", i,r,ch);
+/* équivalent à : form = "i  =  %5d  r = %10.3e  ch =%s " ;  printf(form, i,r,ch);  */
+\end{cpp}
+
+Les sorties sur l'écran sont :
+\begin{console}
+entrer la valeur de i : 2
+i  =  2
+-3 +123.45 Claude
+i  =     -3  r =  1.234e+02  ch =Claude
+\end{console}
+
+\begin{remark}
+Dans un \lstinline§scanf§, la chaîne de caractères du format ne peut contenir du texte, mais uniquement des éléments de format.
+\end{remark}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Entrées/sorties sur les fichiers}
+\index{entrées/sorties!fichiers}\index{stdio.h}
+
+%--------------------------------------------------------------------
+\subsection{Accès aux fichiers}
+
+Un fichier est accessible par un pointeur de fichier déclaré par : §FILE * fichier§ (§FILE§ est défini dans §stdio.h§).
+
+L'ouverture de fichier se fait par la fonction §fopen()§, la fermeture par §fclose()§.\index{fopen}\index{fclose}\index{feof}\medskip
+
+En-têtes:
+\begin{cppsyntaxe}
+FILE * fopen(const char *nom_de_fichier, const char *mode_d_ouverture);
+/* retourne un pointeur de fichier; si le fichier n'a pu être ouvert, retourne NULL. */
+
+int fclose (FILE *fichier);
+/* ferme le fichier (après une mise à jour réelle du fichier physique)
+   retourne la constante pré-définie EOF en cas d'erreur, 0 sinon. */
+
+int feof(FILE *fichier);
+/* retourne une valeur non nulle si l'indicateur de fin de fichier est positionné. */
+\end{cppsyntaxe}
+
+Les modes d'ouverture sont :
+ 
+\begin{tabular}{ll}        
+\lstinline§"r"§ &    ouverture en lecture\\
+\lstinline§"w"§ &    ouverture en écriture (écrasement si le fichier existe, création sinon)\\
+\lstinline§"a"§    & ouverture pour ajout en fin de fichier\\
+\lstinline§"r+"§ & ouverture en lecture/écriture (mise à jour de fichier existant)\\
+\lstinline§"w+"§ & ouverture en lecture/écriture (écrasement si le fichier existe, création sinon)\\
+\lstinline§"a+"§ & ouverture en lecture n'importe où et en écriture en fin de fichier
+\end{tabular}
+
+\begin{remark} 
+\lstinline§b§ indique qu'il s'agit d'un fichier binaire (\lstinline§"rb"§, \lstinline§"wb"§, \lstinline§"ab"§, \lstinline§"r+b"§, \lstinline§"w+b"§, \lstinline§"a+b"§).
+\end{remark}
+
+Exemple :
+\begin{cpp}
+FILE *fic;
+fic = fopen("données", "r");
+if (fic == NULL) {
+    /*erreur en ouverture, fichier non trouvé */
+} else {
+    while (!feof(fic)) {
+        /* Lecture du fichier... */
+    }
+    fclose(fic);
+}
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties de caractères dans un fichier}
+\index{entrées/sorties!caractères dans un fichier}\index{fgetc}\index{fputc}
+
+En-têtes:
+\begin{cppsyntaxe}
+int fgetc(FILE *fichier);
+/* retourne la valeur entière du caractère courant pointé dans le fichier;
+     retourne EOF si la fin de fichier est atteinte. */
+
+int fputc(char c, FILE *fichier);
+/* écrit le caractère c dans le fichier;
+     retourne le caractère lui-même ou EOF en cas d'erreur. */
+\end{cppsyntaxe}
+
+\begin{remark}
+\lstinline§getchar()§ est équivalent à \lstinline§fgetc(stdin)§, \lstinline§putchar(c)§ est équivalent à \lstinline§fgetc(c,stdout)§.
+\end{remark}
+
+Exemple d'utilisation:
+\begin{cpp}
+/* lecture du fichier "essai" caractère par caractère i compte les caractères */
+FILE *f; 
+char c; 
+int i = 1;
+f = fopen("essai", "r");
+
+if (f==NULL) { 
+    printf("erreur");
+    exit(1);
+}
+
+do {
+    c = fgetc(f);
+    printf("%dème c = %c\n",i,c) ;
+    i++;
+}
+while (c != EOF) ;
+fclose(f);
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties de chaînes de caractères dans un fichier}
+\index{entrées/sorties!chaînes de caractères dans un fichier}\index{fgets}\index{fputs}
+
+En-têtes:
+\begin{cppsyntaxe}
+char * fgets(char *s, int n, FILE *fichier);
+/* lit au plus les n-1 caractères courants pointés dans le fichier, et les place dans la chaîne s; s'arrête si on rencontre un caractère de fin de ligne (qui est alors mis dans la chaîne s) ou de fin de fichier; la chaîne s est complétée par un '\0'; retourne s si la fin de fichier est atteinte, NULL en cas d'erreur. */
+
+int fputs(const char s, FILE *fichier);
+/* écrit la chaîne s  dans le fichier, retourne EOF en cas d'erreur */
+\end{cppsyntaxe}
+
+\begin{remark}
+\lstinline§gets(&s)§ est équivalent à \lstinline§fgets(&s,stdin)§, \lstinline§puts(s)§ est équivalent à  \lstinline§fgets(s,stdout)§.
+\end{remark}
+
+Exemple d'utilisation:
+\begin{cpp}
+/* lecture du fichier "essai" ligne par ligne (inférieures à 200 caractères) i compte les lignes */
+
+FILE *f;
+char *s ;
+int i = 1;
+s = malloc(200);
+if ((f=fopen("essai", "r")) == NULL) {
+    printf("erreur");
+    exit(2);
+}
+while (fgets(s, 200, f) != NULL) {
+    printf("%dème chaîne = %s\n",i,s) ;
+    i++;
+};
+fclose(f);
+
+/* lecture du fichier "essai" 5 caractères à la fois au plus i compte les groupes */
+FILE *f;
+char *s ;
+int i = 1;
+s = malloc(6);
+f = fopen("essai_texte","r");
+if (f == NULL) {
+    printf("erreur");
+    exit(2);
+}
+while (fgets(s, 6, f) != NULL) {
+    printf("%dème chaîne = %s\n",i,s) ;
+    i++;
+}
+fclose(f);
+\end{cpp}
+
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties formatées dans un fichier}
+\index{entrées/sorties!formatées dans un fichier}\index{fscanf}\index{fprintf}
+
+En-têtes:
+\begin{cppsyntaxe}
+int fscanf(FILE *fichier, const char *format, liste_d_adresses_de_variables);
+/* fonctionne comme scanf() mais sur le fichier précisé retourne le nombre de valeurs correctement affectées. */
+
+int fprintf(FILE *fichier, const char *format, liste_de_variables);
+/* fonctionne comme printf() mais sur le fichier précisé retourne le nombre de caractères écrits dans le fichier. */
+\end{cppsyntaxe}
+
+\begin{remark} 
+\lstinline§scanf(...)§ est équivalent à \lstinline§fscanf(stdin,...)§, \lstinline§printf(...)§ est équivalent à \lstinline§fprintf(stdout,...)§.
+\end{remark}
+
+Il existe des fonctions analogues pour lire et écrire dans des chaînes de caractères : 
+\begin{cppsyntaxe}
+int sscanf(char *s, const char *format, liste_d_adresses_de_variables)
+/* fonctionne comme scanf() mais dans la chaîne s */
+
+int sprintf (char *s, const char *format, liste_de_variables)
+/* fonctionne comme printf() mais dans la chaîne s */
+\end{cppsyntaxe}
+    
+    
+%--------------------------------------------------------------------
+\subsection{Entrées/sorties non formatées (ou binaires) dans un fichier}
+\index{entrées/sorties!non formatées dans un fichier}\index{fread}\index{fwrite}
+
+Il s'agit ici de manipuler des blocs d'octets.% ou des enregistrements.
+
+En-têtes:
+\begin{cppsyntaxe}
+size_t fread(void *ptr,size_t t,size_t n,FILE *fichier); 
+/* lit au plus n objets de taille t dans le fichier et les range dans le tableau ptr retourne le nombre d'objets correctement lus (erreur si ce nombre est inférieur à n) */
+
+size_t fwrite(void *ptr,size_t t,size_t n,FILE *fichier); 
+/* écrit n objets de taille t du tableau ptr dans le fichier retourne le nombre d'objets correctement écrits (erreur si ce nombre est inférieur à n) */
+\end{cppsyntaxe}
+
+§size_t§ est le type entier non signé.
+
+Exemple d'utilisation:
+\begin{cpp}
+float a[30], b[10];
+FILE *f;
+
+/* écrit les 10 premiers réels du tableau a dans le fichier */
+f=fopen(nom,"w");
+fwrite(a, sizeof(float), 10, f); 
+fclose(f);             
+
+/* remplit les 8 premiers éléments du tableau b par des réels lus dans le fichier essai */
+f=fopen("essai", "r");
+fread(b, sizeof(float), 8, f);
+fclose(f);
+\end{cpp}
+
+    
+On peut aussi, par exemple, s'en servir pour ranger et récupérer des structures dans des fichiers par un seul ordre de lecture/écriture.\medskip
+
+La fonction §fseek§ permet l'accès direct.\index{fseek}
+
+En-têtes:
+\begin{cppsyntaxe}
+int fseek(FILE * f,long deplacement,int origine);
+/* positionne le pointeur de fichier sur l'octet origine+deplacement retourne 0 si elle réussit, une valeur non nulle en cas d'erreur. */
+\end{cppsyntaxe}
+
+Quelques constantes sont prédéfinies pour le paramètre origine :   
+
+\begin{tabular}{ll}        
+\lstinline§SEEK_SET§ : début du fichier \\
+\lstinline§SEEK_CUR§ : position courante \\
+\lstinline§SEEK_END§ : fin du fichier
+\end{tabular}        
+
+Exemple d'utilisation:
+\begin{cpp}
+/* Lecture d'un fichier non formaté de réels. */
+
+float x;
+f=fopen("essai","r+");
+fseek( f,(n-1)*sizeof(float),0); /* positionne le pointeur de fichier sur le n-ième réel du fichier */
+fread(&x,sizeof(float),1,f); /* place dans x un réel, soit le n-ième du fichier */
+
+x=x*10; /* modification de x */
+
+fseek(f,(n-1)*sizeof(float),0); /* repositionne le pointeur de fichier sur le n-ième réel du fichier */
+fwrite(&x,sizeof(float),1,f); /* modifie le n-ième réel du fichier */
+\end{cpp}
+
+Voir également les autres fonctions disponibles dans la bibliothèque standard (§stdio.h§), entre autres :
+
+\begin{cppsyntaxe}
+int ftell(FILE * f);
+/* retourne la position courante du pointeur de fichier (-1 en cas d'erreur) */
+
+void rewind(FILE * f);
+/* équivalent à fseek(f,0,0) */
+\end{cppsyntaxe}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Outils sur les chaînes de caractères}\label{sec:string.h}\index{string.h}
+
+La bibliothèque §string.h§ fournit en autres des outils sur les chaînes de caractères qui permettent leur manipulation sans se soucier de leur implantation. Les principaux outils sont :\index{strlen}\index{strcpy}\index{strcat}\index{strcmp}
+
+En-têtes:
+\begin{cppsyntaxe}
+unsigned int strlen(const char* ch);
+/* retourne la longueur (nombre de caractères) de la chaîne ch */
+
+char* strcpy(char* ch1, const char* ch2);
+/* procédure qui copie la chaîne ch2 dans la chaîne ch1 réalise l'affectation de tableau impossible en C : ch1 = ch2 */
+
+char* strcat(char* ch1, const char* ch2);
+/* procédure qui concatène la chaîne ch2 au bout de la chaîne ch1, ch1 est donc modifiée */
+
+int strcmp(const char* ch1, const char* ch2);
+/* fonction qui compare les deux chaînes ch1 et ch2 par ordre alphabétique, retourne une valeur négative si ch1<ch2, nulle si ch1==ch2 et positive si ch1>ch2 */
+\end{cppsyntaxe}
+
+Exemple d'utilisation:
+\begin{cpp}
+chaine A, B, C;
+
+printf("Entrer un mot : ");
+scanf("%s",A);
+strcpy(B,"Ens2m Besançon");
+strcpy(C,"Ensmm");
+
+if (strlen(A)+strlen(B)<29)
+    strcat(A,B);
+    
+if (strcmp(A,C)<0)
+    printf("Erreur\n");
+else
+    printf("A = %s\n",A);
+\end{cpp}
+
+Le type chaine est défini par §typedef char chaine[30];§.
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Outils mathématiques} \index{fonctions!mathématiques}
+\index{fonction!puissance}\index{fonction!racine carrée}
+\index{fonction!exponentielle}\index{fonction!logarithme}
+\index{fonction!valeur absolue}
+    
+La bilbiothèque §math.h§ fournit les fonctions mathématiques de bases.\index{math.h}\index{exp}\index{log}\index{log10}\index{pow}\index{sqrt}\index{fabs}
+%On domain error, implementation-defined value returned and errno set to EDOM. On range error, errno set to ERANGE and return value is HUGE_VAL with correct sign for overflow, or zero for underflow. Angles are in radians.
+
+En-têtes:
+\begin{cppsyntaxe}
+double exp(double x);
+/* exponentielle de x */
+
+double log(double x);
+/* logarithme naturel de x */
+
+double log10(double x);
+/* logarithme en base 10 de x */
+
+double pow(double x, double y);
+/* x puissance y */
+
+double sqrt(double x);
+/* racine carrée */
+
+double fabs(double x);
+/* valeur absolue de x */
+\end{cppsyntaxe}
+
+
+Pour les fonctions trigonométriques les angles sont en radians.\index{fonctions!trigonométriques}\index{sin}\index{cos}\index{tan}\index{asin}\index{acos}\index{atan}\index{atan2} \index{sinh}\index{cosh}\index{tanh}    
+
+En-têtes:
+\begin{cppsyntaxe}
+double sin(double x);
+/* sinus de x */
+
+double cos(double x);
+/* cosinus de x */
+
+double tan(double x);
+/* tangente de x */
+
+double asin(double x);
+/* arcsinus de x */
+
+double acos(double x);
+/* arccosinus de x */
+
+double atan(double x);
+/* arctangente de x */
+
+double atan2(double y, double x);
+/* arctangente de y/x */
+
+double sinh(double x);
+/* sinus hyperbolique de x */
+
+double cosh(double x);
+/* cosinus hyperbolique de x */
+
+double tanh(double x);
+/* tangente hyperbolique de x */
+\end{cppsyntaxe}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Gestion des erreurs}\index{assert.h}\index{assert}\index{assertion}\index{erreurs}
+
+Pour gérer simplement les erreurs lors de l'exécution, il existe la fonction standard
+§assert(expression)§ accessible avec §#include <assert.h>§.\medskip
+
+Si l'expression vaut 0, §assert§ va afficher un message d'erreur sur la sortie standard et arrêtera le programme par un appel à §abort()§.\index{abort}\medskip
+
+Exemple :
+\begin{cpp}
+assert(a%2 == 0);     // nécessite que a soit pair
+
+assert(i <= C.dim);   // nécessite que i soit ou égal à la dimension
+assert(v.n == u.n);   // nécessite u et v de même dimension
+
+assert(f != NULL);    // vérifie si un fichier f s'est ouvert correctement
+\end{cpp}
+
+On peut inhiber la fonction §assert§ en définissant la variable symbolique §NDEBUG§.\medskip
+
+On peut à l'aide d'§assert()§ se fabriquer une fonction regroupant tous les invariants que doit vérifier une variable et ainsi l'appeler à chaque manipulation de la variable.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Autres bibliothèques :
+%
+% complex ?
+%
+% time ?
+%
+% ctype ?
+%
+% atoi, atof ?
+%
