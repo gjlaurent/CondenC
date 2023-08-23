@@ -1,2 +1,2 @@
-[![CondenC.pdf](CondenC.pdf)](CondenC.pdf)
+[![CondenC.pdf](CondenC.png)](CondenC.pdf)
 
